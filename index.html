@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIP Wisata v9.0 - Ultra Dynamic</title>
+    <title>SIP Wisata v13.0 - Premium Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -12,58 +12,52 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
-            --primary: #6366f1; /* Indigo Neon */
-            --secondary: #a855f7; /* Purple */
-            --accent: #06b6d4; /* Cyan */
-            --bg: #fdfdff;
-            --dark: #0f172a;
-            --glass: rgba(255, 255, 255, 0.9);
+            --primary: #6366f1; --secondary: #a855f7; --accent: #06b6d4;
+            --bg: #fdfdff; --dark: #0f172a; --glass: rgba(255, 255, 255, 0.9);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background-color: var(--bg); color: var(--dark); }
+        body { background-color: var(--bg); color: var(--dark); overflow-x: hidden; }
 
-        /* Login Screen Modern */
+        /* Login Screen */
         #loginScreen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--dark), #1e1b4b); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 25px; }
-        .login-card { background: var(--glass); padding: 45px 35px; border-radius: 40px; width: 100%; max-width: 420px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); text-align: center; backdrop-filter: blur(10px); }
-        .login-card h2 { font-weight: 800; color: var(--dark); letter-spacing: -1px; margin-bottom: 30px; font-size: 1.8rem; }
+        .login-card { background: var(--glass); padding: 45px 35px; border-radius: 40px; width: 100%; max-width: 420px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
 
-        /* App Layout */
+        /* Layout */
         .app-container { max-width: 600px; margin: 0 auto; min-height: 100vh; padding-bottom: 110px; }
         header { padding: 40px 25px 90px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-radius: 0 0 50px 50px; position: relative; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3); }
         
-        .top-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; margin-top: -60px; }
-        .s-card { background: var(--glass); padding: 22px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.05); backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.5); }
-        .s-card h2 { font-size: 1.6rem; font-weight: 800; color: var(--primary); margin-top: 5px; }
-        .s-card small { font-weight: 700; color: #64748b; font-size: 0.7rem; text-transform: uppercase; }
+        .top-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; margin-top: -60px; position: relative; z-index: 10; }
+        .s-card { background: white; padding: 22px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
+        .s-card b { display: block; font-size: 1.5rem; color: var(--primary); font-weight: 800; }
+        .s-card small { font-weight: 700; color: #64748b; font-size: 0.65rem; text-transform: uppercase; }
 
         /* Navigation */
         .nav-bar { position: fixed; bottom: 25px; left: 25px; right: 25px; background: var(--dark); height: 80px; border-radius: 30px; display: flex; align-items: center; justify-content: space-around; z-index: 1000; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        .nav-btn { border: none; background: none; color: #64748b; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 700; transition: 0.3s; }
+        .nav-btn { border: none; background: none; color: #64748b; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 700; transition: 0.3s; cursor: pointer; }
         .nav-btn.active { color: var(--accent); transform: translateY(-5px); }
-        .nav-btn i { font-size: 1.5rem; }
 
-        /* Content Area */
+        /* Content */
         .content { padding: 25px 20px; }
-        .chart-box { background: white; padding: 25px; border-radius: 35px; margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); }
-
-        /* Table Style (Mode Publik) */
+        .chart-box { background: white; padding: 25px; border-radius: 35px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); }
+        
+        /* Table Style */
         .table-container { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f1f5f9; padding: 15px; text-align: left; font-size: 0.75rem; color: #475569; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 15px; border-bottom: 1px solid #f8fafc; font-size: 0.85rem; font-weight: 500; }
-        tr:nth-child(even) { background-color: #fcfdff; }
+        th { background: #f1f5f9; padding: 15px 10px; text-align: left; font-size: 0.65rem; color: #475569; border-bottom: 2px solid #e2e8f0; white-space: normal; line-height: 1.2; }
+        td { padding: 15px 10px; border-bottom: 1px solid #f8fafc; font-size: 0.8rem; font-weight: 700; }
 
-        /* Admin Card Style */
+        /* Admin Style */
         .admin-card { background: white; padding: 22px; border-radius: 28px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--secondary); box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
 
-        /* Modern Controls */
-        .btn-pdf { background: var(--accent); color: white; padding: 14px 25px; border-radius: 20px; border: none; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; width: 100%; box-shadow: 0 10px 20px rgba(6, 182, 212, 0.2); }
-        input, select { width: 100%; padding: 16px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; margin-bottom: 15px; font-weight: 600; transition: 0.3s; }
-        input:focus, select:focus { border-color: var(--primary); background: white; }
-        .btn-main { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; padding: 20px; border-radius: 20px; border: none; width: 100%; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3); }
+        /* Inputs */
+        select, input { width: 100%; padding: 16px; border-radius: 20px; border: 2px solid #f1f5f9; background: #fff; margin-bottom: 15px; font-weight: 600; outline: none; transition: 0.3s; }
+        select:focus, input:focus { border-color: var(--primary); }
+        .btn-main { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; padding: 18px; border-radius: 20px; border: none; width: 100%; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3); }
 
         .hidden { display: none !important; }
         .admin-only { display: none; }
+        .tab-pane { display: none; }
+        .tab-active { display: block; }
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: var(--accent); z-index: 11000; display: none; }
     </style>
 </head>
@@ -73,14 +67,14 @@
 
     <div id="loginScreen">
         <div class="login-card">
-            <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); width: 70px; height: 70px; border-radius: 22px; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);">
-                <i class="fas fa-shield-halved"></i>
+            <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); width: 70px; height: 70px; border-radius: 22px; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem;">
+                <i class="fas fa-umbrella-beach"></i>
             </div>
-            <h2>SIP WISATA <span style="color:var(--primary)">v9.0</span></h2>
+            <h2 style="margin-bottom: 30px;">SIP WISATA <span style="color:var(--primary)">v13</span></h2>
             <input type="text" id="userIn" placeholder="Username">
             <input type="password" id="passIn" placeholder="Password">
-            <button onclick="auth('admin')" class="btn-main">MASUK ADMIN</button>
-            <button onclick="auth('public')" style="margin-top:25px; background:none; border:none; color:var(--primary); font-weight:800; font-size: 0.9rem;">Masuk sebagai Publik</button>
+            <button onclick="auth('admin')" class="btn-main">LOGIN ADMIN</button>
+            <button onclick="auth('public')" style="margin-top:25px; background:none; border:none; color:var(--primary); font-weight:800; cursor:pointer;">Masuk sebagai Publik</button>
         </div>
     </div>
 
@@ -88,99 +82,108 @@
         <header>
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h1 style="font-size: 1.6rem; font-weight: 800; letter-spacing: -1px;">Dashboard</h1>
+                    <h1 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -1px;">Grand Dashboard</h1>
                     <p id="roleTag" style="font-size: 0.75rem; opacity: 0.8; font-weight: 700;">Akses Publik</p>
                 </div>
-                <button onclick="location.reload()" style="background:rgba(255,255,255,0.25); border:none; width: 45px; height: 45px; border-radius:15px; color:white; backdrop-filter: blur(5px);"><i class="fas fa-power-off"></i></button>
+                <button onclick="location.reload()" style="background:rgba(255,255,255,0.25); border:none; width: 45px; height: 45px; border-radius:15px; color:white;"><i class="fas fa-power-off"></i></button>
             </div>
         </header>
 
         <div class="top-stats">
             <div class="s-card">
-                <small>Total Wisatawan</small>
-                <h2 id="totalVisit">0</h2>
+                <small>Wisatawan</small>
+                <b id="totalVisit">0</b>
             </div>
             <div class="s-card">
-                <small>Filter Aktif</small>
-                <h2 id="filterLabel" style="font-size: 1.1rem; color:var(--dark);">Semua</h2>
+                <small>Lokasi Aktif</small>
+                <b id="locTag" style="font-size: 0.9rem; color: var(--dark);">Semua</b>
             </div>
         </div>
 
         <div class="content">
-            <div style="position: relative; margin-bottom: 25px;">
-                <i class="fas fa-filter" style="position: absolute; left: 18px; top: 18px; color: var(--primary);"></i>
-                <select id="mainFilter" onchange="runFilter()" style="padding-left: 45px; margin-bottom: 0; box-shadow: 0 10px 20px rgba(0,0,0,0.02);">
-                    <option value="all">Semua Lokasi Wisata</option>
-                </select>
-            </div>
+            
+            <div id="tab-home" class="tab-pane tab-active">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                    <select id="mainFilter" onchange="runFilter()" style="margin:0;"><option value="all">Semua Lokasi</option></select>
+                    <select id="typeFilter" onchange="runFilter()" style="margin:0;">
+                        <option value="all">Semua Jenis</option>
+                        <option value="manca">Dom. Mancanegara</option>
+                        <option value="nusa">Dom. Nusantara</option>
+                    </select>
+                </div>
 
-            <div id="tab-home">
                 <div class="chart-box">
                     <canvas id="mainChart" height="200"></canvas>
                 </div>
 
-                <button id="btnPdf" class="btn-pdf" onclick="downloadPDF()">
-                    <i class="fas fa-cloud-download-alt"></i> DOWNLOAD LAPORAN PDF
+                <button id="btnPdf" class="btn-main" onclick="downloadPDF()" style="background:var(--dark); margin-bottom: 25px;">
+                    <i class="fas fa-file-download"></i> CETAK LAPORAN PDF
                 </button>
 
-                <div id="publicTableContainer" class="table-container">
+                <div id="publicView" class="table-container">
                     <table id="reportTable">
                         <thead>
                             <tr>
                                 <th>PERIODE</th>
                                 <th>LOKASI</th>
-                                <th>ALAM</th>
-                                <th>BUATAN</th>
+                                <th style="white-space:normal">WISATA<br>MANCANEGARA</th>
+                                <th style="white-space:normal">WISATA<br>NUSANTARA</th>
                                 <th style="color:var(--primary)">TOTAL</th>
                             </tr>
                         </thead>
-                        <tbody id="publicTbody"></tbody>
+                        <tbody id="tbody"></tbody>
                     </table>
                 </div>
 
-                <div id="adminCardContainer" class="hidden"></div>
+                <div id="adminView" class="hidden"></div>
             </div>
 
-            <div id="tab-add" class="tab-pane hidden">
+            <div id="tab-add" class="tab-pane">
                 <div style="background: white; padding: 35px; border-radius: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.03);">
-                    <h2 style="margin-bottom: 25px; font-weight: 800; color:var(--dark);">Input Laporan</h2>
+                    <h2 style="margin-bottom: 25px;">Input Laporan</h2>
                     <form onsubmit="handleInsert(event)">
-                        <label style="font-size:0.75rem; font-weight:800; color:var(--primary); margin-left:5px;">LOKASI DESTINASI</label>
                         <select id="fDest" required></select>
                         <div style="display: flex; gap: 12px;">
                             <select id="fBln"></select><select id="fThn"></select>
                         </div>
-                        <div style="display: flex; gap: 12px;">
+                        <div style="display: flex; gap: 15px;">
                             <div style="flex:1">
-                                <label style="font-size:0.7rem; font-weight:800; color:#64748b;">WISATA ALAM</label>
-                                <input type="number" id="fAlam" value="0">
+                                <label style="font-size:0.7rem; font-weight:800; color:var(--primary)">MANCANEGARA</label>
+                                <input type="number" id="fManca" value="0">
                             </div>
                             <div style="flex:1">
-                                <label style="font-size:0.7rem; font-weight:800; color:#64748b;">WISATA BUATAN</label>
-                                <input type="number" id="fBuatan" value="0">
+                                <label style="font-size:0.7rem; font-weight:800; color:var(--primary)">NUSANTARA</label>
+                                <input type="number" id="fNusa" value="0">
                             </div>
                         </div>
-                        <button type="submit" class="btn-main" style="margin-top:10px;">SIMPAN LAPORAN</button>
+                        <button type="submit" class="btn-main" style="margin-top:10px;">SIMPAN DATA</button>
                     </form>
                 </div>
             </div>
 
-            <div id="tab-set" class="tab-pane hidden">
+            <div id="tab-set" class="tab-pane">
+                <div style="background: white; padding: 35px; border-radius: 40px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 20px;">Keamanan Admin</h3>
+                    <input type="password" id="oldP" placeholder="Password Lama">
+                    <input type="password" id="newP" placeholder="Password Baru">
+                    <button onclick="updatePass()" class="btn-main" style="background:var(--dark)">GANTI PASSWORD</button>
+                </div>
                 <div style="background: white; padding: 35px; border-radius: 40px;">
-                    <h2 style="margin-bottom: 25px; font-weight: 800;">Manajemen Lokasi</h2>
-                    <div style="display: flex; gap: 10px; margin-bottom: 25px;">
-                        <input type="text" id="newDest" placeholder="Nama Lokasi Baru..." style="margin-bottom:0;">
-                        <button onclick="addDest()" class="btn-main" style="width: 70px; padding: 0;"><i class="fas fa-plus"></i></button>
+                    <h3 style="margin-bottom: 20px;">Manajemen Lokasi</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="newD" placeholder="Nama Lokasi..." style="margin:0;">
+                        <button onclick="addDest()" class="btn-main" style="width: 70px;">+</button>
                     </div>
                     <div id="masterList"></div>
                 </div>
             </div>
+
         </div>
 
         <nav class="nav-bar">
-            <button class="nav-btn active" onclick="switchTab('tab-home', this)"><i class="fas fa-chart-pie"></i>Beranda</button>
-            <button class="nav-btn admin-only" onclick="switchTab('tab-add', this)"><i class="fas fa-circle-plus"></i>Input</button>
-            <button class="nav-btn admin-only" onclick="switchTab('tab-set', this)"><i class="fas fa-folder-tree"></i>Master</button>
+            <button class="nav-btn active" onclick="switchTab('tab-home', this)"><i class="fas fa-home"></i>Home</button>
+            <button class="nav-btn admin-only" onclick="switchTab('tab-add', this)"><i class="fas fa-plus-circle"></i>Input</button>
+            <button class="nav-btn admin-only" onclick="switchTab('tab-set', this)"><i class="fas fa-cog"></i>Settings</button>
         </nav>
     </div>
 
@@ -191,55 +194,53 @@
 
         let isAdmin = false;
         let dbData = [];
-        let chartObj = null;
+        let chart = null;
+        let adminPass = localStorage.getItem('sip_pass_v13') || 'admin123';
         const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
         function auth(mode) {
             const u = document.getElementById('userIn').value;
             const p = document.getElementById('passIn').value;
             if(mode === 'admin') {
-                if(u === 'admin' && p === 'admin123') {
+                if(u === 'admin' && p === adminPass) {
                     isAdmin = true;
                     document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'flex');
-                    document.getElementById('roleTag').innerText = "Administrator Access";
-                    document.getElementById('publicTableContainer').classList.add('hidden');
-                    document.getElementById('adminCardContainer').classList.remove('hidden');
-                    document.getElementById('btnPdf').classList.add('hidden');
-                } else { return alert("Data login salah!"); }
+                    document.getElementById('roleTag').innerText = "Administrator Mode";
+                    document.getElementById('publicView').style.display = 'none';
+                    document.getElementById('adminView').classList.remove('hidden');
+                    document.getElementById('btnPdf').style.display = 'none';
+                } else { return alert("Gagal Login!"); }
             }
-            document.getElementById('loginScreen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('loginScreen').style.display = 'none';
-                init();
-            }, 400);
+            document.getElementById('loginScreen').style.display = 'none';
+            init();
         }
 
         function init() {
-            const bln = document.getElementById('fBln');
-            months.forEach((m, i) => bln.innerHTML += `<option value="${i+1}">${m}</option>`);
-            const thn = document.getElementById('fThn');
-            for(let y=2026; y>=2024; y--) thn.innerHTML += `<option value="${y}">${y}</option>`;
+            const b = document.getElementById('fBln');
+            const t = document.getElementById('fThn');
+            months.forEach((m, i) => b.innerHTML += `<option value="${i+1}">${m}</option>`);
+            for(let y=2026; y>=2024; y--) t.innerHTML += `<option value="${y}">${y}</option>`;
             fetchData();
         }
 
         async function fetchData() {
             showLoad(true);
-            const { data: dests } = await sb.from('destinations').select('*').order('name');
-            const { data: logs } = await sb.from('visitor_logs').select('*, destinations(name)').order('created_at', {ascending: false});
-            dbData = logs || [];
+            const { data: d } = await sb.from('destinations').select('*').order('name');
+            const { data: l } = await sb.from('visitor_logs').select('*, destinations(name)').order('created_at', {ascending: false});
+            dbData = l || [];
             
             const f = document.getElementById('mainFilter');
             const fd = document.getElementById('fDest');
             const ml = document.getElementById('masterList');
-            f.innerHTML = '<option value="all">Semua Lokasi Wisata</option>';
+            f.innerHTML = '<option value="all">Semua Lokasi</option>';
             fd.innerHTML = ''; ml.innerHTML = '';
 
-            dests?.forEach(d => {
-                f.innerHTML += `<option value="${d.id}">${d.name}</option>`;
-                fd.innerHTML += `<option value="${d.id}">${d.name}</option>`;
-                ml.innerHTML += `<div style="display:flex; justify-content:space-between; padding:18px 0; border-bottom:1px solid #f1f5f9; align-items:center;">
-                    <span style="font-weight:700;">${d.name}</span>
-                    <button onclick="delDest(${d.id})" style="background:#fff1f2; color:var(--secondary); border:none; padding:8px 12px; border-radius:12px;"><i class="fas fa-trash-alt"></i></button>
+            d?.forEach(item => {
+                f.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+                fd.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+                ml.innerHTML += `<div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #f1f5f9; align-items:center;">
+                    <b style="font-size:0.9rem;">${item.name}</b>
+                    <button onclick="delDest(${item.id})" style="background:#fff1f2; color:var(--secondary); border:none; padding:8px 12px; border-radius:12px;"><i class="fas fa-trash"></i></button>
                 </div>`;
             });
             runFilter();
@@ -247,63 +248,66 @@
         }
 
         function runFilter() {
-            const val = document.getElementById('mainFilter').value;
-            const filtered = val === 'all' ? dbData : dbData.filter(x => x.destination_id == val);
+            const loc = document.getElementById('mainFilter').value;
+            const type = document.getElementById('typeFilter').value;
             
+            let filtered = loc === 'all' ? dbData : dbData.filter(x => x.destination_id == loc);
+            if(type === 'manca') filtered = filtered.filter(x => x.natural_count > x.manmade_count);
+            if(type === 'nusa') filtered = filtered.filter(x => x.manmade_count > x.natural_count);
+
             let total = 0;
-            const tbody = document.getElementById('publicTbody');
-            const cardBox = document.getElementById('adminCardContainer');
-            tbody.innerHTML = ''; cardBox.innerHTML = '';
+            const tb = document.getElementById('tbody');
+            const av = document.getElementById('adminView');
+            tb.innerHTML = ''; av.innerHTML = '';
 
             filtered.forEach(i => {
                 total += i.total;
-                tbody.innerHTML += `<tr>
+                tb.innerHTML += `<tr>
                     <td style="color:#64748b">${months[i.month-1].substr(0,3)} ${i.year}</td>
-                    <td style="font-weight:700">${i.destinations?.name}</td>
+                    <td>${i.destinations?.name}</td>
                     <td>${i.natural_count}</td>
                     <td>${i.manmade_count}</td>
-                    <td style="font-weight:800; color:var(--primary)">${i.total}</td>
+                    <td style="color:var(--primary)">${i.total}</td>
                 </tr>`;
-                
-                cardBox.innerHTML += `<div class="admin-card">
-                    <div>
-                        <b style="font-size:1rem;">${i.destinations?.name}</b>
-                        <p style="font-size:0.75rem; color:#64748b;">${months[i.month-1]} ${i.year}</p>
-                    </div>
-                    <div style="text-align:right">
-                        <b style="color:var(--primary); font-size:1.1rem;">${i.total}</b><br>
-                        <span onclick="delLog(${i.id})" style="color:var(--secondary); font-size:0.7rem; font-weight:800; text-transform:uppercase; cursor:pointer;">Hapus</span>
-                    </div>
+                av.innerHTML += `<div class="admin-card">
+                    <div><b>${i.destinations?.name}</b><p style="font-size:0.75rem; color:#64748b;">${months[i.month-1]} ${i.year}</p></div>
+                    <div style="text-align:right"><b>${i.total}</b><br><span onclick="delLog(${i.id})" style="color:var(--secondary); font-size:0.7rem; font-weight:800; cursor:pointer;">HAPUS</span></div>
                 </div>`;
             });
-
             document.getElementById('totalVisit').innerText = total.toLocaleString();
-            document.getElementById('filterLabel').innerText = document.getElementById('mainFilter').options[document.getElementById('mainFilter').selectedIndex].text;
-            updateChart(filtered);
+            document.getElementById('locTag').innerText = document.getElementById('mainFilter').options[document.getElementById('mainFilter').selectedIndex].text;
+            renderChart(filtered);
         }
 
-        function updateChart(data) {
+        function renderChart(data) {
             const ctx = document.getElementById('mainChart').getContext('2d');
-            if(chartObj) chartObj.destroy();
+            if(chart) chart.destroy();
             const slice = [...data].reverse().slice(-6);
-            chartObj = new Chart(ctx, {
+            chart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: slice.map(s => months[s.month-1].substr(0,3)),
-                    datasets: [{ 
-                        data: slice.map(s => s.total), 
-                        borderColor: '#6366f1', 
-                        borderWidth: 4, 
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#6366f1',
-                        pointRadius: 5,
+                    datasets: [{
+                        data: slice.map(s => s.total),
+                        borderColor: '#6366f1',
+                        borderWidth: 4,
                         tension: 0.4,
                         fill: true,
-                        backgroundColor: 'rgba(99, 102, 241, 0.05)'
+                        backgroundColor: 'rgba(99, 102, 241, 0.05)',
+                        pointRadius: 5,
+                        pointBackgroundColor: '#fff'
                     }]
                 },
                 options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
             });
+        }
+
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('tab-active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('tab-active');
+            btn.classList.add('active');
+            if(id === 'tab-home') runFilter();
         }
 
         async function handleInsert(e) {
@@ -311,39 +315,37 @@
             showLoad(true);
             await sb.from('visitor_logs').insert({
                 month: parseInt(document.getElementById('fBln').value),
-                year: parseInt(document.getElementById('fTahun').value || 2026),
+                year: parseInt(document.getElementById('fThn').value),
                 destination_id: parseInt(document.getElementById('fDest').value),
-                natural_count: parseInt(document.getElementById('fAlam').value || 0),
-                manmade_count: parseInt(document.getElementById('fBuatan').value || 0)
+                natural_count: parseInt(document.getElementById('fManca').value || 0),
+                manmade_count: parseInt(document.getElementById('fNusa').value || 0)
             });
-            fetchData(); switchTab('tab-home', document.querySelector('.nav-btn'));
+            fetchData();
+            switchTab('tab-home', document.querySelectorAll('.nav-btn')[0]);
+        }
+
+        function updatePass() {
+            const op = document.getElementById('oldP').value;
+            const np = document.getElementById('newP').value;
+            if(op === adminPass && np) {
+                adminPass = np; localStorage.setItem('sip_pass_v13', np);
+                alert("Sukses! Password telah diganti.");
+                location.reload();
+            } else { alert("Verifikasi Gagal!"); }
         }
 
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             doc.setFontSize(18);
-            doc.text("Laporan Kunjungan Destinasi Wisata", 14, 20);
-            doc.setFontSize(10);
-            doc.text("Filter: " + document.getElementById('filterLabel').innerText, 14, 28);
-            doc.autoTable({ html: '#reportTable', startY: 35, theme: 'striped', headStyles: {fillColor: [99, 102, 241]} });
-            doc.save('Laporan_Wisata_v9.pdf');
+            doc.text("LAPORAN KUNJUNGAN WISATA", 14, 20);
+            doc.autoTable({ html: '#reportTable', startY: 30, theme: 'striped', headStyles: {fillColor: [99, 102, 241]} });
+            doc.save('Laporan_SIP_Wisata.pdf');
         }
 
-        function switchTab(id, btn) {
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.remove('hidden');
-            btn.classList.add('active');
-            if(id === 'tab-home') {
-                document.getElementById('publicTableContainer').classList.toggle('hidden', isAdmin);
-                document.getElementById('adminCardContainer').classList.toggle('hidden', !isAdmin);
-            }
-        }
-
-        async function delLog(id) { if(confirm('Hapus data ini?')) { await sb.from('visitor_logs').delete().eq('id', id); fetchData(); } }
+        async function delLog(id) { if(confirm('Hapus?')) { await sb.from('visitor_logs').delete().eq('id', id); fetchData(); } }
         async function delDest(id) { if(confirm('Hapus Lokasi?')) { await sb.from('destinations').delete().eq('id', id); fetchData(); } }
-        async function addDest() { const n = document.getElementById('newDest').value; if(n) { await sb.from('destinations').insert({name: n}); document.getElementById('newDest').value=''; fetchData(); } }
+        async function addDest() { const n = document.getElementById('newD').value; if(n) { await sb.from('destinations').insert({name: n}); document.getElementById('newD').value=''; fetchData(); } }
         function showLoad(s) { document.getElementById('loader').style.display = s ? 'block' : 'none'; }
     </script>
 </body>
