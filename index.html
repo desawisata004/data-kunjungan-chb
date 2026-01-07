@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Laporan Pengunjung Wisata</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb; --primary-dark: #1d4ed8; --secondary: #10b981;
+            --danger: #ef4444; --warning: #f59e0b; --light: #f8fafc;
+            --dark: #1e293b; --gray: #64748b; --gray-light: #e2e8f0;
+            --radius: 10px; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); color: var(--dark); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { background: white; padding: 25px 30px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo i { font-size: 2.5rem; color: var(--primary); }
+        .logo h1 { font-size: 1.8rem; }
+        .logo span { color: var(--primary); }
+        .config-panel { background: var(--light); padding: 15px; border-radius: var(--radius); border: 2px dashed var(--gray-light); }
+        input, select, button { padding: 12px 15px; border: 2px solid var(--gray-light); border-radius: var(--radius); font-family: 'Poppins'; }
+        button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        button:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        button.secondary { background: var(--secondary); }
+        button.danger { background: var(--danger); }
+        button.warning { background: var(--warning); }
+        .tabs { display: flex; background: white; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 30px; overflow: hidden; }
+        .tab { padding: 18px 30px; cursor: pointer; font-weight: 500; flex: 1; text-align: center; border-bottom: 3px solid transparent; }
+        .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: var(--light); }
+        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 25px; margin-bottom: 25px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; border-radius: var(--radius); padding: 25px; display: flex; align-items: center; gap: 20px; box-shadow: var(--shadow); }
+        .stat-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; }
+        .stat-icon.total { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .stat-icon.month { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .stat-icon.popular { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .stat-info .value { font-size: 2rem; font-weight: 700; }
+        .table-container { overflow-x: auto; border-radius: var(--radius); }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        thead { background: var(--primary); color: white; }
+        th, td { padding: 15px 20px; text-align: left; border-bottom: 1px solid var(--gray-light); }
+        .alert { padding: 15px; border-radius: var(--radius); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid var(--secondary); }
+        .alert-error { background: #fee2e2; color: #991b1b; border-left: 4px solid var(--danger); }
+        .chart-container { height: 350px; position: relative; }
+        .destination-item { display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--gray-light); }
+        @media (max-width: 768px) { header { flex-direction: column; } .tabs { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <div>
+                    <h1>Laporan <span>Pengunjung</span></h1>
+                    <p>Sistem Monitoring Destinasi Wisata</p>
+                </div>
+            </div>
+            <div class="config-panel" id="configSection">
+                <div class="config-input">
+                    <input type="text" id="supabaseUrl" placeholder="URL Supabase">
+                    <input type="password" id="supabaseKey" placeholder="Anon Key">
+                    <button onclick="initSupabase()" class="secondary"><i class="fas fa-plug"></i> Hubungkan</button>
+                </div>
+            </div>
+        </header>
+
+        <div id="alertContainer"></div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('dashboard')"><i class="fas fa-home"></i> Dashboard</div>
+            <div class="tab" onclick="switchTab('input')"><i class="fas fa-user-plus"></i> Input</div>
+            <div class="tab" onclick="switchTab('visitors')"><i class="fas fa-users"></i> Data</div>
+            <div class="tab" onclick="switchTab('reports')"><i class="fas fa-file-pdf"></i> Laporan</div>
+            <div class="tab" onclick="switchTab('settings')"><i class="fas fa-cog"></i> Pengaturan</div>
+        </div>
+
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-icon total"><i class="fas fa-users"></i></div>
+                    <div class="stat-info"><h3>Total Pengunjung</h3><div class="value" id="totalVisitors">0</div></div>
+                </div>
+                <div class="stat-card"><div class="stat-icon month"><i class="fas fa-calendar"></i></div>
+                    <div class="stat-info"><h3>Bulan Ini</h3><div class="value" id="monthVisitors">0</div></div>
+                </div>
+                <div class="stat-card"><div class="stat-icon popular"><i class="fas fa-star"></i></div>
+                    <div class="stat-info"><h3>Terpopuler</h3><div class="value" id="popularDestination">-</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Tren Kunjungan</h2>
+                <div class="chart-container"><canvas id="visitorChart"></canvas></div>
+            </div>
+        </div>
+
+        <div id="input" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-plus"></i> Tambah Data Kunjungan</h2>
+                <form id="visitorForm" style="margin-top:20px">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px">
+                        <div><label>Bulan</label><select id="visitMonth" required></select></div>
+                        <div><label>Tahun</label><select id="visitYear" required></select></div>
+                        <div><label>Destinasi</label><select id="destinationSelect" required><option value="">Pilih Destinasi</option></select></div>
+                        <div><label>Alam</label><input type="number" id="naturalVisitors" value="0" min="0"></div>
+                        <div><label>Buatan</label><input type="number" id="manmadeVisitors" value="0" min="0"></div>
+                    </div>
+                    <button type="submit" class="secondary" style="margin-top:20px; width:100%"><i class="fas fa-save"></i> Simpan Data</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="visitors" class="tab-content">
+            <div class="card">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>No</th><th>Waktu</th><th>Destinasi</th><th>Alam</th><th>Buatan</th><th>Total</th><th>Aksi</th></tr>
+                        </thead>
+                        <tbody id="visitorsList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="reports" class="tab-content">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px">
+                    <h2>Laporan Visual</h2>
+                    <button onclick="exportToPDF()" class="warning"><i class="fas fa-download"></i> Unduh PDF</button>
+                </div>
+                <div class="chart-container"><canvas id="reportChart"></canvas></div>
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <div class="card">
+                <h3>Kelola Destinasi</h3>
+                <div style="display:flex; gap:10px; margin:15px 0">
+                    <input type="text" id="newDestName" placeholder="Nama Destinasi" style="flex:1">
+                    <button onclick="addDest()"><i class="fas fa-plus"></i></button>
+                </div>
+                <div id="destList"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 SIP - Sistem Informasi Pariwisata</p>
+        </footer>
+    </div>
+
+    <script>
+        let client = null, vChart = null, rChart = null;
+        const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+        // Init UI
+        window.onload = () => {
+            const mSel = document.getElementById('visitMonth');
+            months.forEach((m, i) => mSel.innerHTML += `<option value="${i+1}">${m}</option>`);
+            
+            const ySel = document.getElementById('visitYear');
+            for(let y=2026; y>=2020; y--) ySel.innerHTML += `<option value="${y}">${y}</option>`;
+
+            const saved = JSON.parse(localStorage.getItem('sb_cfg'));
+            if(saved) {
+                document.getElementById('supabaseUrl').value = saved.url;
+                document.getElementById('supabaseKey').value = saved.key;
+                initSupabase();
+            }
+        };
+
+        async function initSupabase() {
+            const url = document.getElementById('supabaseUrl').value;
+            const key = document.getElementById('supabaseKey').value;
+            try {
+                client = supabase.createClient(url, key);
+                localStorage.setItem('sb_cfg', JSON.stringify({url, key}));
+                showMsg('Berhasil terhubung!', 'success');
+                refreshAll();
+            } catch (e) { showMsg('Gagal terhubung', 'error'); }
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('.tab, .tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.tab[onclick="switchTab('${id}')"]`).classList.add('active');
+            document.getElementById(id).classList.add('active');
+            if(id === 'reports') initReportChart();
+        }
+
+        async function refreshAll() {
+            if(!client) return;
+            loadDestinations();
+            loadVisitorData();
+            updateDashboardStats();
+        }
+
+        async function loadDestinations() {
+            const { data } = await client.from('destinations').select('*');
+            const sel = document.getElementById('destinationSelect');
+            const list = document.getElementById('destList');
+            sel.innerHTML = '<option value="">Pilih Destinasi</option>';
+            list.innerHTML = '';
+            data?.forEach(d => {
+                sel.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                list.innerHTML += `<div class="destination-item">${d.name} <button class="danger" onclick="delDest(${d.id})"><i class="fas fa-trash"></i></button></div>`;
+            });
+        }
+
+        async function loadVisitorData() {
+            const { data } = await client.from('visitor_logs').select('*, destinations(name)').order('year', {ascending: false});
+            const tbody = document.getElementById('visitorsList');
+            tbody.innerHTML = '';
+            data?.forEach((v, i) => {
+                tbody.innerHTML += `<tr>
+                    <td>${i+1}</td>
+                    <td>${months[v.month-1]} ${v.year}</td>
+                    <td>${v.destinations?.name}</td>
+                    <td>${v.natural_count}</td>
+                    <td>${v.manmade_count}</td>
+                    <td><strong>${v.total}</strong></td>
+                    <td><button class="danger" onclick="delLog(${v.id})"><i class="fas fa-times"></i></button></td>
+                </tr>`;
+            });
+            updateMainChart(data);
+        }
+
+        document.getElementById('visitorForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const n = parseInt(document.getElementById('naturalVisitors').value);
+            const m = parseInt(document.getElementById('manmadeVisitors').value);
+            const payload = {
+                month: parseInt(document.getElementById('visitMonth').value),
+                year: parseInt(document.getElementById('visitYear').value),
+                destination_id: parseInt(document.getElementById('destinationSelect').value),
+                natural_count: n,
+                manmade_count: m,
+                total: n + m
+            };
+            const { error } = await client.from('visitor_logs').insert(payload);
+            if(!error) { showMsg('Data disimpan!'); refreshAll(); e.target.reset(); }
+        };
+
+        async function delLog(id) { if(confirm('Hapus data?')) { await client.from('visitor_logs').delete().eq('id', id); refreshAll(); } }
+        async function addDest() { 
+            const name = document.getElementById('newDestName').value;
+            await client.from('destinations').insert({name}); 
+            refreshAll(); 
+        }
+
+        function updateMainChart(data) {
+            const ctx = document.getElementById('visitorChart');
+            if(vChart) vChart.destroy();
+            const chartData = data?.slice(0,6).reverse() || [];
+            vChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.map(d => `${months[d.month-1].substr(0,3)} ${d.year}`),
+                    datasets: [{ label: 'Total Pengunjung', data: chartData.map(d => d.total), borderColor: '#2563eb', tension: 0.3 }]
+                }
+            });
+        }
+
+        function showMsg(txt, type='success') {
+            const c = document.getElementById('alertContainer');
+            c.innerHTML = `<div class="alert alert-${type}">${txt}</div>`;
+            setTimeout(() => c.innerHTML = '', 3000);
+        }
+
+        // Skema Supabase Suggestion:
+        // 1. table destinations (id, name)
+        // 2. table visitor_logs (id, month, year, destination_id, natural_count, manmade_count, total)
+
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("Laporan Tahunan Pengunjung Wisata", 14, 15);
+            doc.autoTable({ html: '#visitorsList', margin: { top: 25 } });
+            doc.save("laporan-wisata.pdf");
+        }
+    </script>
+</body>
+</html>
