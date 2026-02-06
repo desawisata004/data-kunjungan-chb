@@ -37,7 +37,7 @@
         .s-card small { font-weight: 700; color: #64748b; font-size: 0.65rem; text-transform: uppercase; }
 
         /* Navigation */
-        .nav-bar { position: fixed; bottom: 25px; left: 25px; right: 25px; background: var(--dark); height: 80px; border-radius: 30px; display: flex; align-items: center; justify-content: space-around; z-index: 1000; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .nav-bar { position: fixed; bottom: 25px; left: 25px; right: 25px; background: var(--dark); height: 80px; border-radius: 30px; display: flex; align-items: center; justify-content: space-around; z-index: 1000; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-width: 600px; margin: 0 auto; }
         .nav-btn { border: none; background: none; color: #6ee7b7; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 700; transition: 0.3s; cursor: pointer; }
         .nav-btn.active { color: var(--accent); transform: translateY(-5px); }
 
@@ -454,7 +454,7 @@
 
     <script>
         const SB_URL = "https://jtszbrvkkbfigxgehmpv.supabase.co";
-        const SB_KEY = "sb_publishable_2HDMnWs-FcznJwtNzoUeQQ_neJmXzc9";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0c3picnZra2JmaWd4Z2VobXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc3MTQ5NzksImV4cCI6MjA1MzI5MDk3OX0.pX7pF6m70vRnFCxVFXY1Sai7ck-1FhIYw2ohxCcvqHE";
         const sb = supabase.createClient(SB_URL, SB_KEY);
 
         let isAdmin = false;
@@ -609,29 +609,72 @@
 
         async function fetchData() {
             showLoad(true);
-            const { data: d } = await sb.from('destinations').select('*').order('name');
-            const { data: l } = await sb.from('visitor_logs').select('*, destinations(name)').order('created_at', {ascending: false});
-            dbData = l || [];
             
-            const f = document.getElementById('mainFilter');
-            const ml = document.getElementById('masterList');
-            const newUserLoc = document.getElementById('newUserLocation');
+            try {
+                // Ambil data destinations
+                const { data: destinations, error: destError } = await sb
+                    .from('destinations')
+                    .select('*')
+                    .order('name');
+                
+                if(destError) {
+                    console.error('Error fetching destinations:', destError);
+                    throw destError;
+                }
+                
+                // Ambil data visitor_logs dengan join destinations
+                const { data: logs, error: logsError } = await sb
+                    .from('visitor_logs')
+                    .select(`
+                        id,
+                        month,
+                        year,
+                        destination_id,
+                        natural_count,
+                        manmade_count,
+                        total,
+                        created_at,
+                        destinations (
+                            id,
+                            name
+                        )
+                    `)
+                    .order('created_at', { ascending: false });
+                
+                if(logsError) {
+                    console.error('Error fetching logs:', logsError);
+                    throw logsError;
+                }
+                
+                dbData = logs || [];
+                destinationsList = destinations || [];
+                
+                // Update UI
+                const f = document.getElementById('mainFilter');
+                const ml = document.getElementById('masterList');
+                const newUserLoc = document.getElementById('newUserLocation');
+                
+                f.innerHTML = '<option value="all">Semua Lokasi</option>';
+                ml.innerHTML = '';
+                newUserLoc.innerHTML = '<option value="all">Semua Lokasi</option>';
+                
+                destinations?.forEach(item => {
+                    f.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+                    newUserLoc.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+                    ml.innerHTML += `<div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #d1fae5; align-items:center;">
+                        <b style="font-size:0.9rem;">${item.name}</b>
+                        <button onclick="delDest(${item.id})" style="background:#fee2e2; color:var(--danger); border:none; padding:8px 12px; border-radius:12px;"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                });
+                
+                runFilter();
+                calculateKPIs();
+                
+            } catch(error) {
+                console.error('Fatal error in fetchData:', error);
+                alert('Gagal memuat data dari database. Periksa koneksi Supabase.');
+            }
             
-            f.innerHTML = '<option value="all">Semua Lokasi</option>';
-            ml.innerHTML = '';
-            newUserLoc.innerHTML = '<option value="all">Semua Lokasi</option>';
-            
-            d?.forEach(item => {
-                f.innerHTML += `<option value="${item.id}">${item.name}</option>`;
-                newUserLoc.innerHTML += `<option value="${item.id}">${item.name}</option>`;
-                ml.innerHTML += `<div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #d1fae5; align-items:center;">
-                    <b style="font-size:0.9rem;">${item.name}</b>
-                    <button onclick="delDest(${item.id})" style="background:#fee2e2; color:var(--danger); border:none; padding:8px 12px; border-radius:12px;"><i class="fas fa-trash"></i></button>
-                </div>`;
-            });
-            
-            runFilter();
-            calculateKPIs();
             showLoad(false);
         }
 
@@ -917,14 +960,25 @@
             showLoad(true);
             
             // Ambil data destinasi
-            const { data: dests } = await sb.from('destinations').select('*').order('name');
+            const { data: dests, error: destsError } = await sb.from('destinations').select('*').order('name');
+            
+            if(destsError) {
+                console.error('Error loading destinations:', destsError);
+                showLoad(false);
+                return;
+            }
+            
             destinationsList = dests || [];
             
             // Ambil data yang sudah ada untuk bulan tersebut
-            const { data: existing } = await sb.from('visitor_logs')
+            const { data: existing, error: existingError } = await sb.from('visitor_logs')
                 .select('*')
-                .eq('month', month)
-                .eq('year', year);
+                .eq('month', parseInt(month))
+                .eq('year', parseInt(year));
+            
+            if(existingError) {
+                console.error('Error loading existing data:', existingError);
+            }
             
             // Reset data bulanan
             monthlyData = {};
@@ -1013,7 +1067,7 @@
             }
         }
 
-        // Save semua data bulanan
+        // Save semua data bulanan - DIPERBAIKI
         async function saveMonthlyData() {
             const month = document.getElementById('fBln').value;
             const year = document.getElementById('fThn').value;
@@ -1025,15 +1079,19 @@
             
             showLoad(true);
             
-            const dataToSave = Object.values(monthlyData).map(item => ({
-                id: item.id, // null untuk insert baru
-                month: item.month,
-                year: item.year,
-                destination_id: item.destination_id,
-                natural_count: item.natural_count,
-                manmade_count: item.manmade_count,
-                total: (parseInt(item.natural_count) || 0) + (parseInt(item.manmade_count) || 0)
-            }));
+            // Siapkan data untuk disimpan
+            const dataToSave = Object.values(monthlyData).map(item => {
+                const payload = {
+                    month: parseInt(item.month),
+                    year: parseInt(item.year),
+                    destination_id: item.destination_id,
+                    natural_count: parseInt(item.natural_count) || 0,
+                    manmade_count: parseInt(item.manmade_count) || 0,
+                    total: (parseInt(item.natural_count) || 0) + (parseInt(item.manmade_count) || 0)
+                };
+                
+                return payload;
+            });
             
             // Filter hanya data yang memiliki nilai (tidak semua 0)
             const filteredData = dataToSave.filter(item => 
@@ -1048,23 +1106,37 @@
             
             try {
                 // Hapus data lama untuk bulan/tahun ini
-                await sb.from('visitor_logs')
+                const { error: deleteError } = await sb
+                    .from('visitor_logs')
                     .delete()
-                    .eq('month', month)
-                    .eq('year', year);
+                    .eq('month', parseInt(month))
+                    .eq('year', parseInt(year));
                 
-                // Insert data baru
-                if(filteredData.length > 0) {
-                    await sb.from('visitor_logs').insert(filteredData);
+                if(deleteError) {
+                    console.error('Delete error:', deleteError);
                 }
                 
+                // Insert data baru
+                const { data: insertedData, error: insertError } = await sb
+                    .from('visitor_logs')
+                    .insert(filteredData)
+                    .select();
+                
+                if(insertError) {
+                    console.error('Insert error:', insertError);
+                    throw insertError;
+                }
+                
+                console.log('Data berhasil disimpan:', insertedData);
                 alert('Data berhasil disimpan!');
-                fetchData();
+                
+                // Refresh data dan kembali ke dashboard
+                await fetchData();
                 switchTab('tab-home', document.querySelectorAll('.nav-btn')[0]);
                 
             } catch(error) {
                 console.error('Error saving data:', error);
-                alert('Gagal menyimpan data!');
+                alert('Gagal menyimpan data! Periksa console untuk detail.');
             }
             
             showLoad(false);
@@ -1250,7 +1322,7 @@
 
         function toggleTheme() {
             const currentBg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
-            if(currentBg === '#f0fdf4') {
+            if(currentBg === '#f0fdf4' || currentBg === 'rgb(240, 253, 244)') {
                 document.documentElement.style.setProperty('--bg', '#064e3b');
                 document.documentElement.style.setProperty('--glass', 'rgba(6, 78, 59, 0.95)');
                 document.documentElement.style.setProperty('--dark', '#f0fdf4');
@@ -1279,24 +1351,39 @@
 
         async function delLog(id) { 
             if(confirm('Hapus data ini?')) { 
-                await sb.from('visitor_logs').delete().eq('id', id); 
-                fetchData(); 
+                const { error } = await sb.from('visitor_logs').delete().eq('id', id);
+                if(error) {
+                    console.error('Error deleting log:', error);
+                    alert('Gagal menghapus data!');
+                } else {
+                    fetchData(); 
+                }
             } 
         }
         
         async function delDest(id) { 
             if(confirm('Hapus lokasi wisata ini?')) { 
-                await sb.from('destinations').delete().eq('id', id); 
-                fetchData(); 
+                const { error } = await sb.from('destinations').delete().eq('id', id);
+                if(error) {
+                    console.error('Error deleting destination:', error);
+                    alert('Gagal menghapus lokasi!');
+                } else {
+                    fetchData(); 
+                }
             } 
         }
         
         async function addDest() { 
             const n = document.getElementById('newD').value; 
             if(n) { 
-                await sb.from('destinations').insert({name: n}); 
-                document.getElementById('newD').value=''; 
-                fetchData(); 
+                const { error } = await sb.from('destinations').insert({name: n});
+                if(error) {
+                    console.error('Error adding destination:', error);
+                    alert('Gagal menambah lokasi!');
+                } else {
+                    document.getElementById('newD').value=''; 
+                    fetchData(); 
+                }
             } 
         }
         
