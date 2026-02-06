@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIP Wisata v14.0 - Live Edition</title>
+    <title>Dashboard Wisata Cihaurbeuti - Pokdarwis WAGS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -13,31 +13,32 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary: #6366f1; --secondary: #a855f7; --accent: #06b6d4;
+            --primary: #10b981; --secondary: #059669; --accent: #34d399;
             --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
-            --bg: #fdfdff; --dark: #0f172a; --glass: rgba(255, 255, 255, 0.9);
+            --bg: #f0fdf4; --dark: #064e3b; --glass: rgba(255, 255, 255, 0.95);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg); color: var(--dark); overflow-x: hidden; }
 
         /* Login Screen */
-        #loginScreen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--dark), #1e1b4b); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 25px; }
+        #loginScreen { position: fixed; inset: 0; background: linear-gradient(135deg, #064e3b, #065f46); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 25px; }
         .login-card { background: var(--glass); padding: 45px 35px; border-radius: 40px; width: 100%; max-width: 450px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
 
         /* Layout */
         .app-container { max-width: 600px; margin: 0 auto; min-height: 100vh; padding-bottom: 110px; }
-        header { padding: 40px 25px 90px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-radius: 0 0 50px 50px; position: relative; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3); }
+        header { padding: 40px 25px 100px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-radius: 0 0 50px 50px; position: relative; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); }
         
-        .top-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; padding: 0 20px; margin-top: -60px; position: relative; z-index: 10; }
+        .logo-section { text-align: center; margin-bottom: 15px; }
+        .logo-icon { width: 70px; height: 70px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 15px; }
+        
+        .top-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; margin-top: -60px; position: relative; z-index: 10; }
         .s-card { background: white; padding: 22px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
         .s-card b { display: block; font-size: 1.5rem; color: var(--primary); font-weight: 800; }
         .s-card small { font-weight: 700; color: #64748b; font-size: 0.65rem; text-transform: uppercase; }
-        .s-card.live { border: 3px solid var(--accent); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); } 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); } }
 
         /* Navigation */
         .nav-bar { position: fixed; bottom: 25px; left: 25px; right: 25px; background: var(--dark); height: 80px; border-radius: 30px; display: flex; align-items: center; justify-content: space-around; z-index: 1000; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        .nav-btn { border: none; background: none; color: #64748b; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 700; transition: 0.3s; cursor: pointer; }
+        .nav-btn { border: none; background: none; color: #6ee7b7; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 700; transition: 0.3s; cursor: pointer; }
         .nav-btn.active { color: var(--accent); transform: translateY(-5px); }
 
         /* Content */
@@ -47,20 +48,20 @@
         /* Table Style */
         .table-container { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f1f5f9; padding: 15px 10px; text-align: left; font-size: 0.65rem; color: #475569; border-bottom: 2px solid #e2e8f0; white-space: normal; line-height: 1.2; }
-        td { padding: 15px 10px; border-bottom: 1px solid #f8fafc; font-size: 0.8rem; font-weight: 700; }
+        th { background: #f0fdf4; padding: 15px 10px; text-align: left; font-size: 0.65rem; color: #064e3b; border-bottom: 2px solid #d1fae5; white-space: normal; line-height: 1.2; font-weight: 800; }
+        td { padding: 15px 10px; border-bottom: 1px solid #f0fdf4; font-size: 0.8rem; font-weight: 700; }
 
         /* Admin Style */
         .admin-card { background: white; padding: 22px; border-radius: 28px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--secondary); box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
 
         /* Inputs */
-        select, input { width: 100%; padding: 16px; border-radius: 20px; border: 2px solid #f1f5f9; background: #fff; margin-bottom: 15px; font-weight: 600; outline: none; transition: 0.3s; }
+        select, input { width: 100%; padding: 16px; border-radius: 20px; border: 2px solid #d1fae5; background: #fff; margin-bottom: 15px; font-weight: 600; outline: none; transition: 0.3s; }
         select:focus, input:focus { border-color: var(--primary); }
-        .btn-main { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; padding: 18px; border-radius: 20px; border: none; width: 100%; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3); }
+        .btn-main { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; padding: 18px; border-radius: 20px; border: none; width: 100%; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3); }
         
         /* Monthly Input Table */
-        .monthly-input { width: 100%; padding: 10px; border: 2px solid #f1f5f9; border-radius: 12px; text-align: center; font-weight: 700; font-size: 0.9rem; transition: 0.3s; }
-        .monthly-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+        .monthly-input { width: 100%; padding: 10px; border: 2px solid #d1fae5; border-radius: 12px; text-align: center; font-weight: 700; font-size: 0.9rem; transition: 0.3s; }
+        .monthly-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
         #monthlyTable th { font-size: 0.7rem; padding: 12px 8px; text-align: center; }
         #monthlyTable td { text-align: center; vertical-align: middle; }
 
@@ -72,9 +73,9 @@
         /* Role Management */
         .role-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; display: inline-block; }
         .role-superadmin { background: #fee2e2; color: var(--danger); }
-        .role-admin { background: #dbeafe; color: var(--primary); }
-        .role-operator { background: #dcfce7; color: var(--success); }
-        .role-viewer { background: #f3e8ff; color: var(--secondary); }
+        .role-admin { background: #dcfce7; color: var(--primary); }
+        .role-operator { background: #dbeafe; color: #3b82f6; }
+        .role-viewer { background: #f3e8ff; color: #a855f7; }
 
         /* User Management Table */
         .user-table { width: 100%; }
@@ -83,27 +84,9 @@
         
         /* Export Section */
         .export-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 20px 0; }
-        .export-btn { padding: 15px; border-radius: 20px; background: #f8fafc; border: 2px solid #e2e8f0; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: 0.3s; }
+        .export-btn { padding: 15px; border-radius: 20px; background: #f0fdf4; border: 2px solid #d1fae5; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: 0.3s; }
         .export-btn:hover { border-color: var(--primary); background: white; }
         .export-btn i { font-size: 1.5rem; color: var(--primary); }
-
-        /* Current Month Banner */
-        .current-month-banner { background: linear-gradient(135deg, var(--accent), var(--primary)); color: white; padding: 20px; border-radius: 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
-        .month-indicator { display: flex; align-items: center; gap: 15px; }
-        .month-indicator i { font-size: 2rem; opacity: 0.8; }
-        .month-stats { text-align: right; }
-        .month-stats .total { font-size: 2.5rem; font-weight: 800; }
-        .month-stats .label { font-size: 0.8rem; opacity: 0.9; }
-
-        /* Live Data Widget */
-        .live-widget { background: white; border-radius: 25px; padding: 20px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); border: 2px solid var(--accent); }
-        .live-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .live-badge { background: var(--accent); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; animation: blink 1.5s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .live-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .live-item { background: #f8fafc; padding: 15px; border-radius: 20px; }
-        .live-item .value { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
-        .live-item .label { font-size: 0.7rem; color: #64748b; font-weight: 700; }
 
         .hidden { display: none !important; }
         .admin-only { display: none; }
@@ -113,20 +96,23 @@
         
         /* KPI Cards */
         .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
-        .kpi-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); }
+        .kpi-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); border-top: 4px solid var(--primary); }
         .kpi-card .value { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
         .kpi-card .label { font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase; }
         .kpi-card .trend { font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
         .trend-up { background: #dcfce7; color: var(--success); }
         .trend-down { background: #fee2e2; color: var(--danger); }
         
+        /* Info Banner */
+        .info-banner { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.1)); padding: 20px; border-radius: 25px; margin-bottom: 25px; border-left: 5px solid var(--primary); }
+        .info-banner h3 { color: var(--dark); font-size: 1rem; margin-bottom: 8px; }
+        .info-banner p { color: #64748b; font-size: 0.85rem; line-height: 1.6; }
+        
         /* Responsive */
         @media (max-width: 480px) {
             .filter-grid { grid-template-columns: 1fr; }
             .top-stats { grid-template-columns: 1fr; }
             .kpi-grid { grid-template-columns: 1fr; }
-            .live-grid { grid-template-columns: 1fr; }
-            .current-month-banner { flex-direction: column; text-align: center; gap: 15px; }
         }
     </style>
 </head>
@@ -137,15 +123,17 @@
     <div id="loginScreen">
         <div class="login-card">
             <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); width: 70px; height: 70px; border-radius: 22px; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem;">
-                <i class="fas fa-umbrella-beach"></i>
+                <i class="fas fa-mountain-sun"></i>
             </div>
-            <h2 style="margin-bottom: 30px;">SIP WISATA <span style="color:var(--primary)">v14</span></h2>
+            <h2 style="margin-bottom: 10px;">Dashboard Wisata <span style="color:var(--primary)">Cihaurbeuti</span></h2>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 30px;">Pokdarwis WAGS</p>
+            
             <div id="publicLogin" style="display: block;">
                 <button onclick="auth('public')" class="btn-main" style="margin-bottom: 15px;">
-                    <i class="fas fa-users"></i> MASUK SEBAGAI PUBLIK
+                    <i class="fas fa-chart-line"></i> LIHAT DASHBOARD
                 </button>
                 <button onclick="showAdminLogin()" style="background:none; border:none; color:var(--primary); font-weight:800; cursor:pointer; font-size:0.9rem;">
-                    Login sebagai Admin
+                    Login untuk Admin
                 </button>
             </div>
             
@@ -159,7 +147,7 @@
                 <input type="password" id="passIn" placeholder="Password">
                 <button onclick="auth('admin')" class="btn-main" style="margin-bottom: 15px;">LOGIN</button>
                 <button onclick="showPublicLogin()" style="background:none; border:none; color:var(--primary); font-weight:800; cursor:pointer; font-size:0.9rem;">
-                    Kembali ke Login Publik
+                    Kembali ke Dashboard Publik
                 </button>
             </div>
         </div>
@@ -167,35 +155,34 @@
 
     <div class="app-container">
         <header>
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-mountain-sun"></i>
+                </div>
+            </div>
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h1 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -1px;" id="headerTitle">Dashboard Live</h1>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
-                        <p id="roleTag" style="font-size: 0.75rem; opacity: 0.8; font-weight: 700;">Akses Publik</p>
+                <div style="flex: 1;">
+                    <h1 style="font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 5px;" id="headerTitle">Dashboard Kunjungan Wisata Cihaurbeuti</h1>
+                    <p style="font-size: 0.8rem; opacity: 0.9; font-weight: 600;">Data Kunjungan Wisata oleh Pokdarwis WAGS</p>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                        <p id="roleTag" style="font-size: 0.7rem; opacity: 0.8; font-weight: 700;">Akses Publik</p>
                         <span id="userBadge" class="role-badge" style="display: none;"></span>
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px;">
                     <button onclick="toggleTheme()" style="background:rgba(255,255,255,0.25); border:none; width: 45px; height: 45px; border-radius:15px; color:white;"><i class="fas fa-moon"></i></button>
-                    <button onclick="location.reload()" style="background:rgba(255,255,255,0.25); border:none; width: 45px; height: 45px; border-radius:15px; color:white;"><i class="fas fa-power-off"></i></button>
+                    <button onclick="location.reload()" style="background:rgba(255,255,255,0.25); border:none; width: 45px; height: 45px; border-radius:15px; color:white;"><i class="fas fa-sync-alt"></i></button>
                 </div>
             </div>
         </header>
 
         <div class="top-stats">
-            <div class="s-card live">
-                <small>Bulan Ini</small>
-                <b id="currentMonthTotal">0</b>
-                <div style="font-size:0.7rem; color:var(--accent); margin-top:5px;">
-                    <i class="fas fa-sync-alt"></i> Live
-                </div>
-            </div>
             <div class="s-card">
-                <small>Total Wisatawan</small>
+                <small>Total Kunjungan</small>
                 <b id="totalVisit">0</b>
             </div>
             <div class="s-card">
-                <small>Lokasi Aktif</small>
+                <small>Lokasi Wisata</small>
                 <b id="locTag" style="font-size: 0.9rem; color: var(--dark);">Semua</b>
             </div>
         </div>
@@ -203,59 +190,20 @@
         <div class="content">
             
             <div id="tab-home" class="tab-pane tab-active">
-                <!-- Current Month Banner -->
-                <div class="current-month-banner">
-                    <div class="month-indicator">
-                        <i class="fas fa-calendar-alt"></i>
-                        <div>
-                            <div style="font-size: 1.2rem; font-weight: 800;">BULAN INI</div>
-                            <div id="currentMonthName" style="font-size: 1rem; opacity: 0.9;">Januari 2024</div>
-                        </div>
-                    </div>
-                    <div class="month-stats">
-                        <div class="total" id="currentMonthTotalBig">0</div>
-                        <div class="label">Total Kunjungan</div>
-                    </div>
-                </div>
-
-                <!-- Live Data Widget -->
-                <div class="live-widget">
-                    <div class="live-header">
-                        <h3 style="font-size: 1rem; color: var(--dark);">
-                            <i class="fas fa-chart-line"></i> Data Real-time
-                        </h3>
-                        <span class="live-badge">
-                            <i class="fas fa-circle"></i> LIVE
-                        </span>
-                    </div>
-                    <div class="live-grid">
-                        <div class="live-item">
-                            <div class="value" id="liveManca">0</div>
-                            <div class="label">Mancanegara</div>
-                        </div>
-                        <div class="live-item">
-                            <div class="value" id="liveNusa">0</div>
-                            <div class="label">Nusantara</div>
-                        </div>
-                        <div class="live-item">
-                            <div class="value" id="liveLocations">0</div>
-                            <div class="label">Lokasi Terdata</div>
-                        </div>
-                        <div class="live-item">
-                            <div class="value" id="liveAvgDaily">0</div>
-                            <div class="label">Rata-rata Harian</div>
-                        </div>
-                    </div>
+                <!-- Info Banner -->
+                <div class="info-banner">
+                    <h3><i class="fas fa-info-circle"></i> Tentang Dashboard Ini</h3>
+                    <p>Dashboard ini menampilkan data kunjungan wisatawan ke berbagai destinasi wisata di wilayah Cihaurbeuti yang dikelola oleh Pokdarwis WAGS. Data mencakup wisatawan mancanegara dan nusantara.</p>
                 </div>
 
                 <!-- Advanced Filter Section -->
                 <div class="advanced-filter">
                     <h3 style="margin-bottom: 15px; font-size: 1rem; color: var(--dark);">
-                        <i class="fas fa-filter"></i> Filter Lanjutan
+                        <i class="fas fa-filter"></i> Filter Data
                     </h3>
                     <div class="filter-grid">
                         <div>
-                            <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 5px;">Lokasi</label>
+                            <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 5px;">Lokasi Wisata</label>
                             <select id="mainFilter" onchange="runFilter()" style="margin:0;">
                                 <option value="all">Semua Lokasi</option>
                             </select>
@@ -264,8 +212,8 @@
                             <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 5px;">Jenis Wisatawan</label>
                             <select id="typeFilter" onchange="runFilter()" style="margin:0;">
                                 <option value="all">Semua Jenis</option>
-                                <option value="manca">Dom. Mancanegara</option>
-                                <option value="nusa">Dom. Nusantara</option>
+                                <option value="manca">Wisatawan Mancanegara</option>
+                                <option value="nusa">Wisatawan Nusantara</option>
                             </select>
                         </div>
                         <div>
@@ -295,8 +243,8 @@
                         <button onclick="applyAdvancedFilter()" class="btn-main" style="flex:1;">
                             <i class="fas fa-search"></i> TERAPKAN FILTER
                         </button>
-                        <button onclick="showCurrentMonth()" class="btn-main" style="flex:0.7; background:var(--accent);">
-                            <i class="fas fa-calendar"></i> BULAN INI
+                        <button onclick="resetFilters()" style="flex:0.5; background:#d1fae5; border:none; border-radius:20px; padding:18px; color:var(--dark); font-weight:800;">
+                            RESET
                         </button>
                     </div>
                 </div>
@@ -309,7 +257,7 @@
                         <div class="trend trend-up" id="avgTrend">+0%</div>
                     </div>
                     <div class="kpi-card">
-                        <div class="label">Pertumbuhan YoY</div>
+                        <div class="label">Pertumbuhan Tahunan</div>
                         <div class="value" id="yoyGrowth">0%</div>
                         <div class="trend trend-up" id="yoyTrend">+0%</div>
                     </div>
@@ -328,11 +276,12 @@
                 <!-- Chart Section -->
                 <div class="chart-box">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3 style="font-size: 1rem; color: var(--dark);">Trend Kunjungan 6 Bulan Terakhir</h3>
+                        <h3 style="font-size: 1rem; color: var(--dark);"><i class="fas fa-chart-area"></i> Trend Kunjungan</h3>
                         <div style="display: flex; gap: 10px;">
                             <select id="chartType" onchange="updateChartType()" style="margin:0; padding: 8px 12px; font-size:0.7rem;">
-                                <option value="line">Line Chart</option>
-                                <option value="bar">Bar Chart</option>
+                                <option value="line">Grafik Garis</option>
+                                <option value="bar">Grafik Batang</option>
+                                <option value="pie">Diagram Pie</option>
                             </select>
                         </div>
                     </div>
@@ -349,9 +298,9 @@
                         <i class="fas fa-file-excel"></i>
                         <span style="font-size:0.7rem; font-weight:700;">Excel</span>
                     </div>
-                    <div class="export-btn" onclick="exportCurrentMonthPDF()">
-                        <i class="fas fa-calendar-check"></i>
-                        <span style="font-size:0.7rem; font-weight:700;">Laporan Bulan Ini</span>
+                    <div class="export-btn" onclick="exportToCSV()">
+                        <i class="fas fa-file-csv"></i>
+                        <span style="font-size:0.7rem; font-weight:700;">CSV</span>
                     </div>
                     <div class="export-btn" onclick="exportToJSON()">
                         <i class="fas fa-file-code"></i>
@@ -361,7 +310,7 @@
 
                 <!-- Data Tables -->
                 <div id="publicView" class="table-container">
-                    <div style="padding: 15px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="padding: 15px; background: #f0fdf4; border-bottom: 2px solid #d1fae5; display: flex; justify-content: space-between; align-items: center;">
                         <h4 style="font-size: 0.9rem; color: var(--dark);">
                             <i class="fas fa-table"></i> Data Kunjungan Wisata
                         </h4>
@@ -371,9 +320,9 @@
                         <thead>
                             <tr>
                                 <th>PERIODE</th>
-                                <th>LOKASI</th>
-                                <th style="white-space:normal">MANCANEGARA</th>
-                                <th style="white-space:normal">NUSANTARA</th>
+                                <th>LOKASI WISATA</th>
+                                <th style="white-space:normal">WISMAN</th>
+                                <th style="white-space:normal">WISNUS</th>
                                 <th style="color:var(--primary)">TOTAL</th>
                                 <th style="color:var(--success)">TREND</th>
                             </tr>
@@ -387,14 +336,11 @@
 
             <div id="tab-add" class="tab-pane">
                 <div style="background: white; padding: 35px; border-radius: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.03);">
-                    <h2 style="margin-bottom: 25px;">
-                        <i class="fas fa-calendar-plus"></i> Input Laporan Bulanan
-                    </h2>
+                    <h2 style="margin-bottom: 25px;"><i class="fas fa-edit"></i> Input Data Kunjungan Bulanan</h2>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
                         <select id="fBln" onchange="loadMonthData()">
                             <option value="">Pilih Bulan</option>
-                            <option value="current" style="font-weight:800; color:var(--accent);">Bulan Ini</option>
                         </select>
                         <select id="fThn" onchange="loadMonthData()">
                             <option value="">Pilih Tahun</option>
@@ -402,17 +348,12 @@
                     </div>
 
                     <div id="monthlyTableContainer" class="table-container" style="display: none;">
-                        <div style="padding: 15px; background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                            <h4 style="font-size: 0.9rem; color: var(--dark);" id="monthlyTableTitle">
-                                Input Data Bulanan
-                            </h4>
-                        </div>
                         <table id="monthlyTable">
                             <thead>
                                 <tr>
                                     <th>LOKASI WISATA</th>
-                                    <th style="color: var(--secondary);">MANCANEGARA</th>
-                                    <th style="color: var(--primary);">NUSANTARA</th>
+                                    <th style="color: var(--secondary);">WISMAN</th>
+                                    <th style="color: var(--primary);">WISNUS</th>
                                     <th>TOTAL</th>
                                 </tr>
                             </thead>
@@ -434,7 +375,7 @@
                     </h3>
                     
                     <!-- Add User Form -->
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 25px; margin-bottom: 25px;">
+                    <div style="background: #f0fdf4; padding: 20px; border-radius: 25px; margin-bottom: 25px;">
                         <h4 style="margin-bottom: 15px; font-size: 0.9rem; color: var(--dark);">Tambah Pengguna Baru</h4>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                             <input type="text" id="newUsername" placeholder="Username">
@@ -486,10 +427,10 @@
                 <!-- Location Management -->
                 <div style="background: white; padding: 35px; border-radius: 40px;">
                     <h3 style="margin-bottom: 20px;">
-                        <i class="fas fa-map-marker-alt"></i> Manajemen Lokasi
+                        <i class="fas fa-map-marker-alt"></i> Manajemen Lokasi Wisata
                     </h3>
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <input type="text" id="newD" placeholder="Nama Lokasi..." style="margin:0;">
+                        <input type="text" id="newD" placeholder="Nama Lokasi Wisata..." style="margin:0;">
                         <button onclick="addDest()" class="btn-main" style="width: 70px;">+</button>
                     </div>
                     <div id="masterList"></div>
@@ -503,10 +444,10 @@
                 <i class="fas fa-home"></i>Dashboard
             </button>
             <button class="nav-btn admin-only" onclick="switchTab('tab-add', this)">
-                <i class="fas fa-plus-circle"></i>Input
+                <i class="fas fa-plus-circle"></i>Input Data
             </button>
             <button class="nav-btn admin-only" onclick="switchTab('tab-set', this)">
-                <i class="fas fa-cog"></i>Settings
+                <i class="fas fa-cog"></i>Pengaturan
             </button>
         </nav>
     </div>
@@ -521,7 +462,7 @@
         let dbData = [];
         let chart = null;
         let chartType = 'line';
-        let adminPass = localStorage.getItem('sip_pass_v13') || 'admin123';
+        let adminPass = localStorage.getItem('sip_pass_v14_cihaurbeuti') || 'admin123';
         const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         
         // Variabel global untuk data bulanan
@@ -532,11 +473,6 @@
         let users = [
             { username: 'admin', password: 'admin123', role: 'admin', location: 'all', id: 1 }
         ];
-
-        // Get current month and year
-        const currentDate = new Date();
-        const currentMonth = currentDate.getMonth() + 1; // 1-12
-        const currentYear = currentDate.getFullYear();
 
         function showAdminLogin() {
             document.getElementById('publicLogin').style.display = 'none';
@@ -602,23 +538,23 @@
                 document.getElementById('publicView').style.display = 'none';
                 document.getElementById('adminView').classList.remove('hidden');
                 document.getElementById('userManagementSection').style.display = 'block';
-                document.getElementById('headerTitle').innerText = 'Admin Dashboard Live';
+                document.getElementById('headerTitle').innerText = 'Panel Admin Wisata Cihaurbeuti';
             } else if(role === 'operator') {
                 document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
                 document.getElementById('publicView').style.display = 'block';
                 document.getElementById('adminView').classList.add('hidden');
                 document.getElementById('userManagementSection').style.display = 'none';
-                document.getElementById('headerTitle').innerText = 'Operator Dashboard Live';
+                document.getElementById('headerTitle').innerText = 'Panel Operator Wisata Cihaurbeuti';
             } else if(role === 'viewer') {
                 document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'none');
                 document.getElementById('publicView').style.display = 'block';
                 document.getElementById('adminView').classList.add('hidden');
-                document.getElementById('headerTitle').innerText = 'Viewer Dashboard Live';
+                document.getElementById('headerTitle').innerText = 'Dashboard Wisata Cihaurbeuti';
             } else {
                 document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'none');
                 document.getElementById('publicView').style.display = 'block';
                 document.getElementById('adminView').classList.add('hidden');
-                document.getElementById('headerTitle').innerText = 'Dashboard Publik Live';
+                document.getElementById('headerTitle').innerText = 'Dashboard Kunjungan Wisata Cihaurbeuti';
             }
         }
 
@@ -626,18 +562,7 @@
             setupMonthlyForm();
             setupYearMonthFilters();
             loadUsersList();
-            
-            // Set current month display
-            document.getElementById('currentMonthName').innerText = `${months[currentMonth-1]} ${currentYear}`;
-            
-            // Auto-select current month in filters
-            document.getElementById('fBln').value = currentMonth;
-            document.getElementById('fThn').value = currentYear;
-            
             fetchData();
-            
-            // Auto-refresh data every 30 seconds
-            setInterval(fetchData, 30000);
         }
 
         function setupMonthlyForm() {
@@ -646,20 +571,16 @@
             
             // Setup bulan
             b.innerHTML = '<option value="">Pilih Bulan</option>';
-            b.innerHTML += '<option value="current" style="font-weight:800; color:var(--accent);">Bulan Ini</option>';
             months.forEach((m, i) => {
                 b.innerHTML += `<option value="${i+1}">${m}</option>`;
             });
             
             // Setup tahun
             t.innerHTML = '<option value="">Pilih Tahun</option>';
+            const currentYear = new Date().getFullYear();
             for(let y = currentYear; y >= 2024; y--) {
                 t.innerHTML += `<option value="${y}">${y}</option>`;
             }
-            
-            // Set default to current month
-            b.value = 'current';
-            t.value = currentYear;
         }
 
         function setupYearMonthFilters() {
@@ -679,16 +600,11 @@
             // Setup tahun
             yearFrom.innerHTML = '<option value="all">Semua Tahun</option>';
             yearTo.innerHTML = '<option value="all">Semua Tahun</option>';
+            const currentYear = new Date().getFullYear();
             for(let y = currentYear; y >= 2020; y--) {
                 yearFrom.innerHTML += `<option value="${y}">${y}</option>`;
                 yearTo.innerHTML += `<option value="${y}">${y}</option>`;
             }
-            
-            // Set default to current month
-            monthFrom.value = currentMonth;
-            monthTo.value = currentMonth;
-            yearFrom.value = currentYear;
-            yearTo.value = currentYear;
         }
 
         async function fetchData() {
@@ -708,76 +624,15 @@
             d?.forEach(item => {
                 f.innerHTML += `<option value="${item.id}">${item.name}</option>`;
                 newUserLoc.innerHTML += `<option value="${item.id}">${item.name}</option>`;
-                ml.innerHTML += `<div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #f1f5f9; align-items:center;">
+                ml.innerHTML += `<div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #d1fae5; align-items:center;">
                     <b style="font-size:0.9rem;">${item.name}</b>
-                    <button onclick="delDest(${item.id})" style="background:#fff1f2; color:var(--secondary); border:none; padding:8px 12px; border-radius:12px;"><i class="fas fa-trash"></i></button>
+                    <button onclick="delDest(${item.id})" style="background:#fee2e2; color:var(--danger); border:none; padding:8px 12px; border-radius:12px;"><i class="fas fa-trash"></i></button>
                 </div>`;
             });
             
-            updateCurrentMonthData();
             runFilter();
             calculateKPIs();
             showLoad(false);
-        }
-
-        function updateCurrentMonthData() {
-            // Get current month data
-            const currentMonthData = dbData.filter(item => 
-                item.month === currentMonth && item.year === currentYear
-            );
-            
-            let totalCurrentMonth = 0;
-            let totalManca = 0;
-            let totalNusa = 0;
-            let locationsCount = 0;
-            
-            currentMonthData.forEach(item => {
-                totalCurrentMonth += item.total;
-                totalManca += item.natural_count;
-                totalNusa += item.manmade_count;
-                if(item.total > 0) locationsCount++;
-            });
-            
-            // Update UI
-            document.getElementById('currentMonthTotal').innerText = totalCurrentMonth.toLocaleString();
-            document.getElementById('currentMonthTotalBig').innerText = totalCurrentMonth.toLocaleString();
-            document.getElementById('liveManca').innerText = totalManca.toLocaleString();
-            document.getElementById('liveNusa').innerText = totalNusa.toLocaleString();
-            document.getElementById('liveLocations').innerText = locationsCount;
-            
-            // Calculate average daily (assuming 30 days)
-            const daysPassed = Math.min(currentDate.getDate(), 30);
-            const avgDaily = daysPassed > 0 ? Math.round(totalCurrentMonth / daysPassed) : 0;
-            document.getElementById('liveAvgDaily').innerText = avgDaily.toLocaleString();
-            
-            // Auto-load current month data in input tab if it's selected
-            const selectedMonth = document.getElementById('fBln').value;
-            const selectedYear = document.getElementById('fThn').value;
-            
-            if(selectedMonth === 'current' || 
-               (parseInt(selectedMonth) === currentMonth && parseInt(selectedYear) === currentYear)) {
-                loadMonthData();
-            }
-        }
-
-        function showCurrentMonth() {
-            // Set filters to current month
-            document.getElementById('mainFilter').value = 'all';
-            document.getElementById('typeFilter').value = 'all';
-            document.getElementById('monthFrom').value = currentMonth;
-            document.getElementById('monthTo').value = currentMonth;
-            document.getElementById('yearFrom').value = currentYear;
-            document.getElementById('yearTo').value = currentYear;
-            
-            runFilter();
-            
-            // Scroll to current month data
-            const currentMonthRow = document.querySelector(`[data-month="${currentMonth}"][data-year="${currentYear}"]`);
-            if(currentMonthRow) {
-                currentMonthRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                currentMonthRow.style.animation = 'highlight 2s';
-                setTimeout(() => currentMonthRow.style.animation = '', 2000);
-            }
         }
 
         function applyAdvancedFilter() {
@@ -804,7 +659,7 @@
             
             let filtered = loc === 'all' ? [...dbData] : dbData.filter(x => x.destination_id == loc);
             
-            // Filter by type
+            // Filter by type (natural_count = Wisman, manmade_count = Wisnus)
             if(type === 'manca') filtered = filtered.filter(x => x.natural_count > x.manmade_count);
             if(type === 'nusa') filtered = filtered.filter(x => x.manmade_count > x.natural_count);
             
@@ -838,9 +693,6 @@
             filtered.forEach(i => {
                 total += i.total;
                 
-                // Check if this is current month
-                const isCurrentMonth = i.month === currentMonth && i.year === currentYear;
-                
                 // Calculate trend
                 let trend = '';
                 if(previousMonthData) {
@@ -849,18 +701,12 @@
                     trend = `<span style="color:${change >= 0 ? '#10b981' : '#ef4444'}">${change >= 0 ? '+' : ''}${percent}%</span>`;
                 }
                 
-                tb.innerHTML += `<tr ${isCurrentMonth ? 'style="background:linear-gradient(90deg, rgba(99, 102, 241, 0.05), transparent); border-left: 4px solid var(--accent);"' : ''} 
-                    data-month="${i.month}" data-year="${i.year}">
-                    <td style="color:#64748b; ${isCurrentMonth ? 'font-weight:800; color:var(--accent);' : ''}">
-                        ${months[i.month-1].substr(0,3)} ${i.year}
-                        ${isCurrentMonth ? ' <i class="fas fa-bolt" style="color:var(--accent);"></i>' : ''}
-                    </td>
+                tb.innerHTML += `<tr>
+                    <td style="color:#64748b">${months[i.month-1].substr(0,3)} ${i.year}</td>
                     <td>${i.destinations?.name}</td>
                     <td>${i.natural_count.toLocaleString()}</td>
                     <td>${i.manmade_count.toLocaleString()}</td>
-                    <td style="color:var(${isCurrentMonth ? '--accent' : '--primary'}); font-weight:800;">
-                        ${i.total.toLocaleString()}
-                    </td>
+                    <td style="color:var(--primary); font-weight:800;">${i.total.toLocaleString()}</td>
                     <td style="font-size:0.7rem; font-weight:800;">${trend}</td>
                 </tr>`;
                 
@@ -868,14 +714,11 @@
                 
                 // Admin view
                 if(currentUser?.role === 'admin') {
-                    av.innerHTML += `<div class="admin-card" ${isCurrentMonth ? 'style="border-left-color:var(--accent);"' : ''}>
-                        <div>
-                            <b>${i.destinations?.name}</b>
-                            <p style="font-size:0.75rem; color:${isCurrentMonth ? 'var(--accent)' : '#64748b'};">${months[i.month-1]} ${i.year} ${isCurrentMonth ? '• Bulan Ini' : ''}</p>
-                        </div>
+                    av.innerHTML += `<div class="admin-card">
+                        <div><b>${i.destinations?.name}</b><p style="font-size:0.75rem; color:#64748b;">${months[i.month-1]} ${i.year}</p></div>
                         <div style="text-align:right">
-                            <b style="color:${isCurrentMonth ? 'var(--accent)' : 'inherit'}">${i.total.toLocaleString()}</b><br>
-                            <span onclick="delLog(${i.id})" style="color:var(--secondary); font-size:0.7rem; font-weight:800; cursor:pointer;">HAPUS</span>
+                            <b>${i.total.toLocaleString()}</b><br>
+                            <span onclick="delLog(${i.id})" style="color:var(--danger); font-size:0.7rem; font-weight:800; cursor:pointer;">HAPUS</span>
                         </div>
                     </div>`;
                 }
@@ -967,85 +810,92 @@
             const ctx = document.getElementById('mainChart').getContext('2d');
             if(chart) chart.destroy();
             
-            // Get last 6 months data including current month
-            const last6Months = [];
-            for(let i = 5; i >= 0; i--) {
-                let month = currentMonth - i;
-                let year = currentYear;
-                
-                if(month < 1) {
-                    month += 12;
-                    year -= 1;
-                }
-                
-                const monthData = data.filter(d => d.month === month && d.year === year);
-                const total = monthData.reduce((sum, d) => sum + d.total, 0);
-                
-                last6Months.push({
-                    month,
-                    year,
-                    total,
-                    label: `${months[month-1].substr(0,3)} ${year.toString().substr(2)}`
+            const slice = [...data].reverse().slice(-12);
+            
+            let chartConfig;
+            
+            if(chartType === 'line' || chartType === 'bar') {
+                chartConfig = {
+                    type: chartType,
+                    data: {
+                        labels: slice.map(s => `${months[s.month-1].substr(0,3)} ${s.year.toString().substr(2)}`),
+                        datasets: [{
+                            label: 'Total Wisatawan',
+                            data: slice.map(s => s.total),
+                            borderColor: '#10b981',
+                            backgroundColor: chartType === 'bar' ? 'rgba(16, 185, 129, 0.7)' : 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: chartType === 'line' ? 4 : 2,
+                            tension: chartType === 'line' ? 0.4 : 0,
+                            fill: chartType === 'line',
+                            pointRadius: chartType === 'line' ? 5 : 0,
+                            pointBackgroundColor: '#fff'
+                        }]
+                    },
+                    options: { 
+                        plugins: { 
+                            legend: { 
+                                display: false 
+                            } 
+                        }, 
+                        scales: { 
+                            y: { 
+                                beginAtZero: true,
+                                grid: { color: 'rgba(0,0,0,0.05)' }
+                            }, 
+                            x: { 
+                                grid: { display: false } 
+                            } 
+                        } 
+                    }
+                };
+            } else if(chartType === 'pie') {
+                // Group by location for pie chart
+                const locationData = {};
+                data.slice(-20).forEach(item => {
+                    const loc = item.destinations?.name || 'Unknown';
+                    if(!locationData[loc]) locationData[loc] = 0;
+                    locationData[loc] += item.total;
                 });
-            }
-            
-            // Fill in missing months with 0
-            const filledData = last6Months.map(item => item.total);
-            
-            const isCurrentMonthIndex = last6Months.findIndex(m => m.month === currentMonth && m.year === currentYear);
-            
-            chart = new Chart(ctx, {
-                type: chartType,
-                data: {
-                    labels: last6Months.map(m => m.label),
-                    datasets: [{
-                        label: 'Total Wisatawan',
-                        data: filledData,
-                        borderColor: '#6366f1',
-                        backgroundColor: chartType === 'bar' ? last6Months.map((m, i) => 
-                            i === isCurrentMonthIndex ? 'rgba(6, 182, 212, 0.7)' : 'rgba(99, 102, 241, 0.7)'
-                        ) : 'rgba(99, 102, 241, 0.05)',
-                        borderWidth: chartType === 'line' ? 4 : 2,
-                        tension: chartType === 'line' ? 0.4 : 0,
-                        fill: chartType === 'line',
-                        pointRadius: chartType === 'line' ? 5 : 0,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#6366f1'
-                    }]
-                },
-                options: { 
-                    plugins: { 
-                        legend: { 
-                            display: false 
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const index = context.dataIndex;
-                                    const monthName = months[last6Months[index].month - 1];
-                                    const year = last6Months[index].year;
-                                    const isCurrent = last6Months[index].month === currentMonth && last6Months[index].year === currentYear;
-                                    return `${monthName} ${year} ${isCurrent ? '(Bulan Ini)' : ''}: ${context.parsed.y.toLocaleString()} wisatawan`;
+                
+                const topLocations = Object.entries(locationData)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 8);
+                
+                const colors = [
+                    '#10b981', '#059669', '#34d399', '#6ee7b7',
+                    '#a7f3d0', '#d1fae5', '#6366f1', '#8b5cf6'
+                ];
+                
+                chartConfig = {
+                    type: 'pie',
+                    data: {
+                        labels: topLocations.map(([loc]) => loc),
+                        datasets: [{
+                            data: topLocations.map(([, total]) => total),
+                            backgroundColor: colors,
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: {
+                                        size: 10
+                                    }
                                 }
                             }
                         }
-                    }, 
-                    scales: { 
-                        y: { 
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0,0,0,0.05)' },
-                            ticks: {
-                                callback: function(value) {
-                                    return value.toLocaleString();
-                                }
-                            }
-                        }, 
-                        x: { 
-                            grid: { display: false } 
-                        } 
-                    } 
-                }
-            });
+                    }
+                };
+            }
+            
+            chart = new Chart(ctx, chartConfig);
         }
 
         function switchTab(id, btn) {
@@ -1059,21 +909,12 @@
 
         // Function untuk load data bulanan
         async function loadMonthData() {
-            let month = document.getElementById('fBln').value;
+            const month = document.getElementById('fBln').value;
             const year = document.getElementById('fThn').value;
-            
-            if(month === 'current') {
-                month = currentMonth;
-                document.getElementById('fBln').value = currentMonth;
-            }
             
             if(!month || !year) return;
             
             showLoad(true);
-            
-            // Update table title
-            const monthName = months[parseInt(month)-1];
-            document.getElementById('monthlyTableTitle').innerText = `Input Data ${monthName} ${year} ${parseInt(month) === currentMonth && parseInt(year) === currentYear ? '(Bulan Ini)' : ''}`;
             
             // Ambil data destinasi
             const { data: dests } = await sb.from('destinations').select('*').order('name');
@@ -1120,18 +961,11 @@
             
             tbody.innerHTML = '';
             
-            let totalManca = 0;
-            let totalNusa = 0;
-            
             destinationsList.forEach(dest => {
                 const data = monthlyData[dest.id];
-                const total = parseInt(data.natural_count || 0) + parseInt(data.manmade_count || 0);
-                
-                totalManca += parseInt(data.natural_count || 0);
-                totalNusa += parseInt(data.manmade_count || 0);
                 
                 tbody.innerHTML += `
-                    <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <tr style="border-bottom: 1px solid #d1fae5;">
                         <td style="padding: 15px 10px;">
                             <b style="font-size: 0.85rem;">${dest.name}</b>
                         </td>
@@ -1140,32 +974,23 @@
                                    class="monthly-input"
                                    value="${data.natural_count}" 
                                    onchange="updateMonthlyData(${dest.id}, 'natural_count', this.value)"
-                                   min="0">
+                                   min="0"
+                                   placeholder="Wisman">
                         </td>
                         <td style="padding: 10px;">
                             <input type="number" 
                                    class="monthly-input"
                                    value="${data.manmade_count}" 
                                    onchange="updateMonthlyData(${dest.id}, 'manmade_count', this.value)"
-                                   min="0">
+                                   min="0"
+                                   placeholder="Wisnus">
                         </td>
                         <td style="padding: 15px 10px; text-align: center; color: var(--primary); font-weight: 800;">
-                            ${total.toLocaleString()}
+                            ${parseInt(data.natural_count || 0) + parseInt(data.manmade_count || 0)}
                         </td>
                     </tr>
                 `;
             });
-            
-            // Add summary row
-            const grandTotal = totalManca + totalNusa;
-            tbody.innerHTML += `
-                <tr style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.05), transparent); border-top: 2px solid var(--accent);">
-                    <td style="padding: 15px 10px; font-weight: 800; color: var(--dark);">TOTAL</td>
-                    <td style="padding: 10px; text-align: center; color: var(--secondary); font-weight: 800;">${totalManca.toLocaleString()}</td>
-                    <td style="padding: 10px; text-align: center; color: var(--primary); font-weight: 800;">${totalNusa.toLocaleString()}</td>
-                    <td style="padding: 15px 10px; text-align: center; color: var(--accent); font-weight: 800; font-size: 1.1rem;">${grandTotal.toLocaleString()}</td>
-                </tr>
-            `;
             
             container.style.display = 'block';
         }
@@ -1182,35 +1007,15 @@
                     const manmadeVal = parseInt(monthlyData[destId].manmade_count) || 0;
                     const totalCell = row.querySelector('td:last-child');
                     if(totalCell) {
-                        totalCell.textContent = (naturalVal + manmadeVal).toLocaleString();
+                        totalCell.textContent = naturalVal + manmadeVal;
                     }
                 }
-                
-                // Update summary row
-                updateSummaryRow();
-            }
-        }
-
-        function updateSummaryRow() {
-            let totalManca = 0;
-            let totalNusa = 0;
-            
-            Object.values(monthlyData).forEach(data => {
-                totalManca += parseInt(data.natural_count || 0);
-                totalNusa += parseInt(data.manmade_count || 0);
-            });
-            
-            const summaryRow = document.querySelector('#monthlyTableBody tr:last-child');
-            if(summaryRow) {
-                summaryRow.cells[1].textContent = totalManca.toLocaleString();
-                summaryRow.cells[2].textContent = totalNusa.toLocaleString();
-                summaryRow.cells[3].textContent = (totalManca + totalNusa).toLocaleString();
             }
         }
 
         // Save semua data bulanan
         async function saveMonthlyData() {
-            const month = document.getElementById('fBln').value === 'current' ? currentMonth : document.getElementById('fBln').value;
+            const month = document.getElementById('fBln').value;
             const year = document.getElementById('fThn').value;
             
             if(!month || !year) {
@@ -1287,7 +1092,7 @@
                         <td>${locationText}</td>
                         <td>
                             ${user.username !== 'admin' ? `
-                                <button onclick="editUser(${index})" style="background:#dbeafe; color:var(--primary); border:none; padding:5px 10px; border-radius:8px; margin-right:5px; font-size:0.7rem;">
+                                <button onclick="editUser(${index})" style="background:#dcfce7; color:var(--primary); border:none; padding:5px 10px; border-radius:8px; margin-right:5px; font-size:0.7rem;">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button onclick="deleteUser(${index})" style="background:#fee2e2; color:var(--danger); border:none; padding:5px 10px; border-radius:8px; font-size:0.7rem;">
@@ -1355,112 +1160,57 @@
         }
 
         // Export Functions
-        function exportCurrentMonthPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Header
-            doc.setFontSize(18);
-            doc.text(`LAPORAN BULAN ${months[currentMonth-1].toUpperCase()} ${currentYear}`, 14, 20);
-            doc.setFontSize(10);
-            doc.text(`Dibuat: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`, 14, 30);
-            
-            // Current Month Summary
-            const currentMonthData = dbData.filter(item => 
-                item.month === currentMonth && item.year === currentYear
-            );
-            
-            let totalCurrentMonth = 0;
-            let totalManca = 0;
-            let totalNusa = 0;
-            
-            currentMonthData.forEach(item => {
-                totalCurrentMonth += item.total;
-                totalManca += item.natural_count;
-                totalNusa += item.manmade_count;
-            });
-            
-            doc.setFontSize(12);
-            doc.text("Ringkasan Bulan Ini:", 14, 45);
-            doc.setFontSize(10);
-            doc.text(`Total Wisatawan: ${totalCurrentMonth.toLocaleString()}`, 20, 55);
-            doc.text(`Mancanegara: ${totalManca.toLocaleString()} (${totalCurrentMonth > 0 ? Math.round(totalManca/totalCurrentMonth*100) : 0}%)`, 20, 60);
-            doc.text(`Nusantara: ${totalNusa.toLocaleString()} (${totalCurrentMonth > 0 ? Math.round(totalNusa/totalCurrentMonth*100) : 0}%)`, 20, 65);
-            
-            // Current Month Table
-            const headers = [["Lokasi", "Mancanegara", "Nusantara", "Total"]];
-            const rows = currentMonthData.map(item => [
-                item.destinations?.name,
-                item.natural_count.toLocaleString(),
-                item.manmade_count.toLocaleString(),
-                item.total.toLocaleString()
-            ]);
-            
-            if(rows.length > 0) {
-                doc.autoTable({
-                    head: headers,
-                    body: rows,
-                    startY: 75,
-                    theme: 'striped',
-                    headStyles: {fillColor: [6, 182, 212]},
-                    styles: {fontSize: 8}
-                });
-            } else {
-                doc.text("Belum ada data untuk bulan ini", 14, 75);
-            }
-            
-            doc.save(`Laporan_${months[currentMonth-1]}_${currentYear}.pdf`);
-        }
-
         function exportToExcel() {
             const table = document.getElementById('reportTable');
             const ws = XLSX.utils.table_to_sheet(table);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, `Data_${months[currentMonth-1]}_${currentYear}`);
-            XLSX.writeFile(wb, `laporan_wisata_${months[currentMonth-1]}_${currentYear}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "Data Wisata Cihaurbeuti");
+            XLSX.writeFile(wb, `Data_Wisata_Cihaurbeuti_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
         function exportToCSV() {
-            const currentMonthData = dbData.filter(item => 
-                item.month === currentMonth && item.year === currentYear
-            );
+            const table = document.getElementById('reportTable');
+            const csv = [];
             
-            if(currentMonthData.length === 0) {
-                alert('Tidak ada data untuk bulan ini!');
-                return;
-            }
+            // Headers
+            const headers = [];
+            table.querySelectorAll('th').forEach(th => {
+                headers.push(th.innerText);
+            });
+            csv.push(headers.join(','));
             
-            const csv = ['Lokasi,Mancanegara,Nusantara,Total'];
-            
-            currentMonthData.forEach(item => {
-                csv.push(`"${item.destinations?.name}",${item.natural_count},${item.manmade_count},${item.total}`);
+            // Rows
+            table.querySelectorAll('tbody tr').forEach(tr => {
+                const row = [];
+                tr.querySelectorAll('td').forEach(td => {
+                    row.push(td.innerText.replace(/,/g, ''));
+                });
+                csv.push(row.join(','));
             });
             
             const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `laporan_${months[currentMonth-1]}_${currentYear}.csv`;
+            a.download = `Data_Wisata_Cihaurbeuti_${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
         }
 
         function exportToJSON() {
-            const currentMonthData = dbData.filter(item => 
-                item.month === currentMonth && item.year === currentYear
-            ).map(item => ({
+            const data = dbData.map(item => ({
                 periode: `${months[item.month-1]} ${item.year}`,
                 lokasi: item.destinations?.name,
-                mancanegara: item.natural_count,
-                nusantara: item.manmade_count,
+                wisman: item.natural_count,
+                wisnus: item.manmade_count,
                 total: item.total
             }));
             
-            const json = JSON.stringify(currentMonthData, null, 2);
+            const json = JSON.stringify(data, null, 2);
             const blob = new Blob([json], { type: 'application/json' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `laporan_${months[currentMonth-1]}_${currentYear}.json`;
+            a.download = `Data_Wisata_Cihaurbeuti_${new Date().toISOString().split('T')[0]}.json`;
             a.click();
         }
 
@@ -1471,50 +1221,43 @@
             // Header
             doc.setFontSize(18);
             doc.text("LAPORAN KUNJUNGAN WISATA", 14, 20);
+            doc.setFontSize(14);
+            doc.text("Wilayah Cihaurbeuti", 14, 28);
             doc.setFontSize(10);
-            doc.text(`Periode: ${new Date().toLocaleDateString('id-ID')}`, 14, 30);
-            doc.text(`Bulan Ini: ${months[currentMonth-1]} ${currentYear}`, 14, 35);
+            doc.text(`Pokdarwis WAGS | ${new Date().toLocaleDateString('id-ID')}`, 14, 35);
             
-            // Current Month Summary
-            const currentMonthData = dbData.filter(item => 
-                item.month === currentMonth && item.year === currentYear
-            );
-            
-            let totalCurrentMonth = 0;
-            currentMonthData.forEach(item => {
-                totalCurrentMonth += item.total;
-            });
-            
+            // KPI Section
             doc.setFontSize(12);
-            doc.text("Ringkasan Statistik:", 14, 50);
+            doc.text("Ringkasan Statistik:", 14, 48);
             doc.setFontSize(10);
-            doc.text(`Total Wisatawan: ${document.getElementById('totalVisit').innerText}`, 20, 60);
-            doc.text(`Bulan Ini: ${totalCurrentMonth.toLocaleString()} wisatawan`, 20, 65);
-            doc.text(`Rata-rata Bulanan: ${document.getElementById('avgMonthly').innerText}`, 20, 70);
-            doc.text(`Pertumbuhan YoY: ${document.getElementById('yoyGrowth').innerText}`, 20, 75);
-            doc.text(`Lokasi Terpopuler: ${document.getElementById('topLocation').innerText}`, 20, 80);
-            doc.text(`Bulan Puncak: ${document.getElementById('peakMonth').innerText}`, 20, 85);
+            doc.text(`Total Kunjungan: ${document.getElementById('totalVisit').innerText} wisatawan`, 20, 58);
+            doc.text(`Rata-rata Bulanan: ${document.getElementById('avgMonthly').innerText} wisatawan`, 20, 63);
+            doc.text(`Pertumbuhan Tahunan: ${document.getElementById('yoyGrowth').innerText}`, 20, 68);
+            doc.text(`Lokasi Terpopuler: ${document.getElementById('topLocation').innerText}`, 20, 73);
+            doc.text(`Bulan Puncak: ${document.getElementById('peakMonth').innerText}`, 20, 78);
             
             // Table
             doc.autoTable({ 
                 html: '#reportTable', 
-                startY: 95,
+                startY: 88,
                 theme: 'striped', 
-                headStyles: {fillColor: [99, 102, 241]},
+                headStyles: {fillColor: [16, 185, 129]},
                 styles: {fontSize: 8}
             });
             
-            doc.save(`Laporan_SIP_Wisata_${new Date().toISOString().split('T')[0]}.pdf`);
+            doc.save(`Laporan_Wisata_Cihaurbeuti_${new Date().toISOString().split('T')[0]}.pdf`);
         }
 
         function toggleTheme() {
             const currentBg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
-            if(currentBg === '#fdfdff') {
-                document.documentElement.style.setProperty('--bg', '#0f172a');
-                document.documentElement.style.setProperty('--glass', 'rgba(15, 23, 42, 0.9)');
+            if(currentBg === '#f0fdf4') {
+                document.documentElement.style.setProperty('--bg', '#064e3b');
+                document.documentElement.style.setProperty('--glass', 'rgba(6, 78, 59, 0.95)');
+                document.documentElement.style.setProperty('--dark', '#f0fdf4');
             } else {
-                document.documentElement.style.setProperty('--bg', '#fdfdff');
-                document.documentElement.style.setProperty('--glass', 'rgba(255, 255, 255, 0.9)');
+                document.documentElement.style.setProperty('--bg', '#f0fdf4');
+                document.documentElement.style.setProperty('--glass', 'rgba(255, 255, 255, 0.95)');
+                document.documentElement.style.setProperty('--dark', '#064e3b');
             }
         }
 
@@ -1523,7 +1266,7 @@
             const np = document.getElementById('newP').value;
             if(op === adminPass && np) {
                 adminPass = np; 
-                localStorage.setItem('sip_pass_v13', np);
+                localStorage.setItem('sip_pass_v14_cihaurbeuti', np);
                 // Update admin user password
                 const adminUser = users.find(u => u.username === 'admin');
                 if(adminUser) adminUser.password = np;
@@ -1542,7 +1285,7 @@
         }
         
         async function delDest(id) { 
-            if(confirm('Hapus Lokasi?')) { 
+            if(confirm('Hapus lokasi wisata ini?')) { 
                 await sb.from('destinations').delete().eq('id', id); 
                 fetchData(); 
             } 
