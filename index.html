@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard Wisata Cihaurbeuti - Pokdarwis WAGS</title>
+    <title>SIP Wisata v13.0 - Premium Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary: #10b981; --secondary: #059669; --accent: #34d399;
-            --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
-            --bg: #f0fdf4; --dark: #064e3b; --glass: rgba(255, 255, 255, 0.95);
+            --primary: #6366f1; --secondary: #a855f7; --accent: #06b6d4;
+            --bg: #fdfdff; --dark: #0f172a; --glass: rgba(255, 255, 255, 0.9);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg); color: var(--dark); overflow-x: hidden; }
 
         /* Login Screen */
-        #loginScreen { position: fixed; inset: 0; background: linear-gradient(135deg, #064e3b, #065f46); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 25px; }
-        .login-card { background: var(--glass); padding: 45px 35px; border-radius: 40px; width: 100%; max-width: 450px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        #loginScreen { position: fixed; inset: 0; background: linear-gradient(135deg, var(--dark), #1e1b4b); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 25px; }
+        .login-card { background: var(--glass); padding: 45px 35px; border-radius: 40px; width: 100%; max-width: 420px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
 
         /* Layout */
         .app-container { max-width: 600px; margin: 0 auto; min-height: 100vh; padding-bottom: 110px; }
-        header { padding: 40px 25px 100px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-radius: 0 0 50px 50px; position: relative; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); }
-        
-        .logo-section { text-align: center; margin-bottom: 15px; }
-        .logo-icon { width: 70px; height: 70px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 15px; }
+        header { padding: 40px 25px 90px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-radius: 0 0 50px 50px; position: relative; box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3); }
         
         .top-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; margin-top: -60px; position: relative; z-index: 10; }
         .s-card { background: white; padding: 22px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
@@ -37,8 +32,8 @@
         .s-card small { font-weight: 700; color: #64748b; font-size: 0.65rem; text-transform: uppercase; }
 
         /* Navigation */
-        .nav-bar { position: fixed; bottom: 25px; left: 25px; right: 25px; background: var(--dark); height: 80px; border-radius: 30px; display: flex; align-items: center; justify-content: space-around; z-index: 1000; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-width: 600px; margin: 0 auto; }
-        .nav-btn { border: none; background: none; color: #6ee7b7; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 700; transition: 0.3s; cursor: pointer; }
+        .nav-bar { position: fixed; bottom: 25px; left: 25px; right: 25px; background: var(--dark); height: 80px; border-radius: 30px; display: flex; align-items: center; justify-content: space-around; z-index: 1000; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .nav-btn { border: none; background: none; color: #64748b; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.75rem; font-weight: 700; transition: 0.3s; cursor: pointer; }
         .nav-btn.active { color: var(--accent); transform: translateY(-5px); }
 
         /* Content */
@@ -46,47 +41,44 @@
         .chart-box { background: white; padding: 25px; border-radius: 35px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); }
         
         /* Table Style */
-        .table-container { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        .table-container { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); overflow-x: auto; }
+        .table-container table { min-width: 500px; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f0fdf4; padding: 15px 10px; text-align: left; font-size: 0.65rem; color: #064e3b; border-bottom: 2px solid #d1fae5; white-space: normal; line-height: 1.2; font-weight: 800; }
-        td { padding: 15px 10px; border-bottom: 1px solid #f0fdf4; font-size: 0.8rem; font-weight: 700; }
+        th { background: #f1f5f9; padding: 15px 10px; text-align: left; font-size: 0.65rem; color: #475569; border-bottom: 2px solid #e2e8f0; white-space: normal; line-height: 1.2; }
+        td { padding: 15px 10px; border-bottom: 1px solid #f8fafc; font-size: 0.8rem; font-weight: 700; }
 
+        /* Input Table Style */
+        .input-table-container { background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        .input-table { width: 100%; border-collapse: collapse; }
+        .input-table th { background: var(--primary); color: white; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; }
+        .input-table td { border-bottom: 1px solid #f1f5f9; }
+        .input-table input { margin: 0; border-radius: 12px; padding: 12px; font-size: 0.85rem; text-align: center; border: 2px solid #f1f5f9; }
+        .input-table input:focus { border-color: var(--primary); outline: none; }
+        .input-table .lokasi-cell { font-weight: 800; color: var(--dark); background: #f8fafc; border-radius: 10px; padding: 12px; }
+        
+        /* Filter Input Section */
+        .input-filter-section { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 30px; 
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
         /* Admin Style */
         .admin-card { background: white; padding: 22px; border-radius: 28px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--secondary); box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
 
         /* Inputs */
-        select, input { width: 100%; padding: 16px; border-radius: 20px; border: 2px solid #d1fae5; background: #fff; margin-bottom: 15px; font-weight: 600; outline: none; transition: 0.3s; }
+        select, input { width: 100%; padding: 16px; border-radius: 20px; border: 2px solid #f1f5f9; background: #fff; margin-bottom: 15px; font-weight: 600; outline: none; transition: 0.3s; }
         select:focus, input:focus { border-color: var(--primary); }
-        .btn-main { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; padding: 18px; border-radius: 20px; border: none; width: 100%; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3); }
-        
-        /* Monthly Input Table */
-        .monthly-input { width: 100%; padding: 10px; border: 2px solid #d1fae5; border-radius: 12px; text-align: center; font-weight: 700; font-size: 0.9rem; transition: 0.3s; }
-        .monthly-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
-        #monthlyTable th { font-size: 0.7rem; padding: 12px 8px; text-align: center; }
-        #monthlyTable td { text-align: center; vertical-align: middle; }
+        .btn-main { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; padding: 18px; border-radius: 20px; border: none; width: 100%; font-weight: 800; cursor: pointer; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3); }
 
-        /* Enhanced Filter Section */
-        .advanced-filter { background: white; padding: 25px; border-radius: 35px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); }
-        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .filter-actions { display: flex; gap: 10px; margin-top: 20px; }
-
-        /* Role Management */
-        .role-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; display: inline-block; }
-        .role-superadmin { background: #fee2e2; color: var(--danger); }
-        .role-admin { background: #dcfce7; color: var(--primary); }
-        .role-operator { background: #dbeafe; color: #3b82f6; }
-        .role-viewer { background: #f3e8ff; color: #a855f7; }
-
-        /* User Management Table */
-        .user-table { width: 100%; }
-        .user-table th { font-size: 0.7rem; padding: 12px; }
-        .user-table td { padding: 12px; font-size: 0.8rem; }
-        
-        /* Export Section */
-        .export-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 20px 0; }
-        .export-btn { padding: 15px; border-radius: 20px; background: #f0fdf4; border: 2px solid #d1fae5; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: 0.3s; }
-        .export-btn:hover { border-color: var(--primary); background: white; }
-        .export-btn i { font-size: 1.5rem; color: var(--primary); }
+        /* Filter Section */
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .filter-grid select { margin: 0; }
 
         .hidden { display: none !important; }
         .admin-only { display: none; }
@@ -94,26 +86,18 @@
         .tab-active { display: block; }
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 5px; background: var(--accent); z-index: 11000; display: none; }
         
-        /* KPI Cards */
-        .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
-        .kpi-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.02); border-top: 4px solid var(--primary); }
-        .kpi-card .value { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
-        .kpi-card .label { font-size: 0.7rem; color: #64748b; font-weight: 700; text-transform: uppercase; }
-        .kpi-card .trend { font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
-        .trend-up { background: #dcfce7; color: var(--success); }
-        .trend-down { background: #fee2e2; color: var(--danger); }
+        /* Action Buttons */
+        .action-btn { padding: 10px 20px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+        .btn-save { background: var(--primary); color: white; }
+        .btn-cancel { background: #f1f5f9; color: var(--dark); }
+        .btn-delete { background: #fee2e2; color: #dc2626; }
         
-        /* Info Banner */
-        .info-banner { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.1)); padding: 20px; border-radius: 25px; margin-bottom: 25px; border-left: 5px solid var(--primary); }
-        .info-banner h3 { color: var(--dark); font-size: 1rem; margin-bottom: 8px; }
-        .info-banner p { color: #64748b; font-size: 0.85rem; line-height: 1.6; }
+        /* Badge */
+        .badge { background: #10b981; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
         
-        /* Responsive */
-        @media (max-width: 480px) {
-            .filter-grid { grid-template-columns: 1fr; }
-            .top-stats { grid-template-columns: 1fr; }
-            .kpi-grid { grid-template-columns: 1fr; }
-        }
+        /* Info Box */
+        .info-box { background: #f0f9ff; border-left: 4px solid var(--accent); padding: 15px; border-radius: 15px; margin-bottom: 20px; }
+        .info-box p { font-size: 0.8rem; color: #475569; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -123,208 +107,85 @@
     <div id="loginScreen">
         <div class="login-card">
             <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); width: 70px; height: 70px; border-radius: 22px; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.8rem;">
-                <i class="fas fa-mountain-sun"></i>
+                <i class="fas fa-umbrella-beach"></i>
             </div>
-            <h2 style="margin-bottom: 10px;">Dashboard Wisata <span style="color:var(--primary)">Cihaurbeuti</span></h2>
-            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 30px;">Pokdarwis WAGS</p>
-            
-            <div id="publicLogin" style="display: block;">
-                <button onclick="auth('public')" class="btn-main" style="margin-bottom: 15px;">
-                    <i class="fas fa-chart-line"></i> LIHAT DASHBOARD
-                </button>
-                <button onclick="showAdminLogin()" style="background:none; border:none; color:var(--primary); font-weight:800; cursor:pointer; font-size:0.9rem;">
-                    Login untuk Admin
-                </button>
-            </div>
-            
-            <div id="adminLogin" style="display: none;">
-                <select id="loginRole" onchange="updateLoginForm()" style="margin-bottom: 20px;">
-                    <option value="admin">Administrator</option>
-                    <option value="operator">Operator</option>
-                    <option value="viewer">Viewer</option>
-                </select>
-                <input type="text" id="userIn" placeholder="Username">
-                <input type="password" id="passIn" placeholder="Password">
-                <button onclick="auth('admin')" class="btn-main" style="margin-bottom: 15px;">LOGIN</button>
-                <button onclick="showPublicLogin()" style="background:none; border:none; color:var(--primary); font-weight:800; cursor:pointer; font-size:0.9rem;">
-                    Kembali ke Dashboard Publik
-                </button>
-            </div>
+            <h2 style="margin-bottom: 30px;">SIP WISATA <span style="color:var(--primary)">v13</span></h2>
+            <input type="text" id="userIn" placeholder="Username">
+            <input type="password" id="passIn" placeholder="Password">
+            <button onclick="auth('admin')" class="btn-main">LOGIN ADMIN</button>
+            <button onclick="auth('public')" style="margin-top:25px; background:none; border:none; color:var(--primary); font-weight:800; cursor:pointer;">Masuk sebagai Publik</button>
         </div>
     </div>
 
     <div class="app-container">
         <header>
-            <div class="logo-section">
-                <div class="logo-icon">
-                    <i class="fas fa-mountain-sun"></i>
-                </div>
-            </div>
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="flex: 1;">
-                    <h1 style="font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 5px;" id="headerTitle">Dashboard Kunjungan Wisata Cihaurbeuti</h1>
-                    <p style="font-size: 0.8rem; opacity: 0.9; font-weight: 600;">Data Kunjungan Wisata oleh Pokdarwis WAGS</p>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                        <p id="roleTag" style="font-size: 0.7rem; opacity: 0.8; font-weight: 700;">Akses Publik</p>
-                        <span id="userBadge" class="role-badge" style="display: none;"></span>
-                    </div>
+                <div>
+                    <h1 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -1px;">DATA KUNJUNGAN WISATA</h1>
+                    <p id="roleTag" style="font-size: 0.75rem; opacity: 0.8; font-weight: 700;">Akses Publik</p>
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="toggleTheme()" style="background:rgba(255,255,255,0.25); border:none; width: 45px; height: 45px; border-radius:15px; color:white;"><i class="fas fa-moon"></i></button>
-                    <button onclick="location.reload()" style="background:rgba(255,255,255,0.25); border:none; width: 45px; height: 45px; border-radius:15px; color:white;"><i class="fas fa-sync-alt"></i></button>
-                </div>
+                <button onclick="location.reload()" style="background:rgba(255,255,255,0.25); border:none; width: 45px; height: 45px; border-radius:15px; color:white;"><i class="fas fa-power-off"></i></button>
             </div>
         </header>
 
         <div class="top-stats">
             <div class="s-card">
-                <small>Total Kunjungan</small>
+                <small>Total Wisatawan</small>
                 <b id="totalVisit">0</b>
             </div>
             <div class="s-card">
-                <small>Lokasi Wisata</small>
-                <b id="locTag" style="font-size: 0.9rem; color: var(--dark);">Semua</b>
+                <small>Filter Aktif</small>
+                <b id="filterTag" style="font-size: 0.9rem; color: var(--dark);">Semua</b>
             </div>
         </div>
 
         <div class="content">
             
             <div id="tab-home" class="tab-pane tab-active">
-                <!-- Info Banner -->
-                <div class="info-banner">
-                    <h3><i class="fas fa-info-circle"></i> Tentang Dashboard Ini</h3>
-                    <p>Dashboard ini menampilkan data kunjungan wisatawan ke berbagai destinasi wisata di wilayah Cihaurbeuti yang dikelola oleh Pokdarwis WAGS. Data mencakup wisatawan mancanegara dan nusantara.</p>
+                <div class="filter-grid">
+                    <select id="mainFilter" onchange="runFilter()">
+                        <option value="all">Semua Lokasi</option>
+                    </select>
+                    <select id="monthFilter" onchange="runFilter()">
+                        <option value="all">Semua Bulan</option>
+                        <option value="1">Januari</option>
+                        <option value="2">Februari</option>
+                        <option value="3">Maret</option>
+                        <option value="4">April</option>
+                        <option value="5">Mei</option>
+                        <option value="6">Juni</option>
+                        <option value="7">Juli</option>
+                        <option value="8">Agustus</option>
+                        <option value="9">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                    <select id="yearFilter" onchange="runFilter()">
+                        <option value="all">Semua Tahun</option>
+                        <option value="2026">2026</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                    </select>
                 </div>
 
-                <!-- Advanced Filter Section -->
-                <div class="advanced-filter">
-                    <h3 style="margin-bottom: 15px; font-size: 1rem; color: var(--dark);">
-                        <i class="fas fa-filter"></i> Filter Data
-                    </h3>
-                    <div class="filter-grid">
-                        <div>
-                            <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 5px;">Lokasi Wisata</label>
-                            <select id="mainFilter" onchange="runFilter()" style="margin:0;">
-                                <option value="all">Semua Lokasi</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 5px;">Jenis Wisatawan</label>
-                            <select id="typeFilter" onchange="runFilter()" style="margin:0;">
-                                <option value="all">Semua Jenis</option>
-                                <option value="manca">Wisatawan Mancanegara</option>
-                                <option value="nusa">Wisatawan Nusantara</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 5px;">Periode Dari</label>
-                            <div style="display: flex; gap: 10px;">
-                                <select id="monthFrom" style="margin:0; flex:1;">
-                                    <option value="all">Semua Bulan</option>
-                                </select>
-                                <select id="yearFrom" style="margin:0; flex:1;">
-                                    <option value="all">Semua Tahun</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label style="font-size: 0.7rem; font-weight: 700; color: #64748b; display: block; margin-bottom: 5px;">Periode Sampai</label>
-                            <div style="display: flex; gap: 10px;">
-                                <select id="monthTo" style="margin:0; flex:1;">
-                                    <option value="all">Semua Bulan</option>
-                                </select>
-                                <select id="yearTo" style="margin:0; flex:1;">
-                                    <option value="all">Semua Tahun</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="filter-actions">
-                        <button onclick="applyAdvancedFilter()" class="btn-main" style="flex:1;">
-                            <i class="fas fa-search"></i> TERAPKAN FILTER
-                        </button>
-                        <button onclick="resetFilters()" style="flex:0.5; background:#d1fae5; border:none; border-radius:20px; padding:18px; color:var(--dark); font-weight:800;">
-                            RESET
-                        </button>
-                    </div>
-                </div>
-
-                <!-- KPI Cards -->
-                <div class="kpi-grid">
-                    <div class="kpi-card">
-                        <div class="label">Rata-rata Bulanan</div>
-                        <div class="value" id="avgMonthly">0</div>
-                        <div class="trend trend-up" id="avgTrend">+0%</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="label">Pertumbuhan Tahunan</div>
-                        <div class="value" id="yoyGrowth">0%</div>
-                        <div class="trend trend-up" id="yoyTrend">+0%</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="label">Lokasi Terpopuler</div>
-                        <div class="value" style="font-size: 1rem;" id="topLocation">-</div>
-                        <div class="label" id="topLocationCount">0 wisatawan</div>
-                    </div>
-                    <div class="kpi-card">
-                        <div class="label">Bulan Puncak</div>
-                        <div class="value" style="font-size: 1rem;" id="peakMonth">-</div>
-                        <div class="label" id="peakMonthCount">0 wisatawan</div>
-                    </div>
-                </div>
-
-                <!-- Chart Section -->
                 <div class="chart-box">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3 style="font-size: 1rem; color: var(--dark);"><i class="fas fa-chart-area"></i> Trend Kunjungan</h3>
-                        <div style="display: flex; gap: 10px;">
-                            <select id="chartType" onchange="updateChartType()" style="margin:0; padding: 8px 12px; font-size:0.7rem;">
-                                <option value="line">Grafik Garis</option>
-                                <option value="bar">Grafik Batang</option>
-                                <option value="pie">Diagram Pie</option>
-                            </select>
-                        </div>
-                    </div>
-                    <canvas id="mainChart" height="250"></canvas>
+                    <canvas id="mainChart" height="200"></canvas>
                 </div>
 
-                <!-- Export Options -->
-                <div class="export-options">
-                    <div class="export-btn" onclick="downloadPDF()">
-                        <i class="fas fa-file-pdf"></i>
-                        <span style="font-size:0.7rem; font-weight:700;">PDF</span>
-                    </div>
-                    <div class="export-btn" onclick="exportToExcel()">
-                        <i class="fas fa-file-excel"></i>
-                        <span style="font-size:0.7rem; font-weight:700;">Excel</span>
-                    </div>
-                    <div class="export-btn" onclick="exportToCSV()">
-                        <i class="fas fa-file-csv"></i>
-                        <span style="font-size:0.7rem; font-weight:700;">CSV</span>
-                    </div>
-                    <div class="export-btn" onclick="exportToJSON()">
-                        <i class="fas fa-file-code"></i>
-                        <span style="font-size:0.7rem; font-weight:700;">JSON</span>
-                    </div>
-                </div>
+                <button id="btnPdf" class="btn-main" onclick="downloadPDF()" style="background:var(--dark); margin-bottom: 25px;">
+                    <i class="fas fa-file-download"></i> CETAK LAPORAN PDF
+                </button>
 
-                <!-- Data Tables -->
                 <div id="publicView" class="table-container">
-                    <div style="padding: 15px; background: #f0fdf4; border-bottom: 2px solid #d1fae5; display: flex; justify-content: space-between; align-items: center;">
-                        <h4 style="font-size: 0.9rem; color: var(--dark);">
-                            <i class="fas fa-table"></i> Data Kunjungan Wisata
-                        </h4>
-                        <span id="dataCount" style="font-size:0.7rem; color:#64748b; font-weight:700;">0 data</span>
-                    </div>
                     <table id="reportTable">
                         <thead>
                             <tr>
                                 <th>PERIODE</th>
-                                <th>LOKASI WISATA</th>
-                                <th style="white-space:normal">WISMAN</th>
-                                <th style="white-space:normal">WISNUS</th>
+                                <th>LOKASI</th>
+                                <th>MANCANEGARA</th>
+                                <th>NUSANTARA</th>
                                 <th style="color:var(--primary)">TOTAL</th>
-                                <th style="color:var(--success)">TREND</th>
                             </tr>
                         </thead>
                         <tbody id="tbody"></tbody>
@@ -335,102 +196,99 @@
             </div>
 
             <div id="tab-add" class="tab-pane">
-                <div style="background: white; padding: 35px; border-radius: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.03);">
-                    <h2 style="margin-bottom: 25px;"><i class="fas fa-edit"></i> Input Data Kunjungan Bulanan</h2>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                        <select id="fBln" onchange="loadMonthData()">
+                <div class="info-box">
+                    <p><i class="fas fa-info-circle" style="color: var(--accent); margin-right: 8px;"></i> 
+                    Pilih bulan dan tahun, kemudian isi jumlah wisatawan untuk setiap lokasi.</p>
+                </div>
+                
+                <div class="input-filter-section">
+                    <div>
+                        <label style="display: block; font-size: 0.7rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;">BULAN</label>
+                        <select id="inputMonth" onchange="loadInputTable()">
                             <option value="">Pilih Bulan</option>
-                        </select>
-                        <select id="fThn" onchange="loadMonthData()">
-                            <option value="">Pilih Tahun</option>
+                            <option value="1">Januari</option>
+                            <option value="2">Februari</option>
+                            <option value="3">Maret</option>
+                            <option value="4">April</option>
+                            <option value="5">Mei</option>
+                            <option value="6">Juni</option>
+                            <option value="7">Juli</option>
+                            <option value="8">Agustus</option>
+                            <option value="9">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
                         </select>
                     </div>
+                    <div>
+                        <label style="display: block; font-size: 0.7rem; font-weight: 800; color: var(--primary); margin-bottom: 8px;">TAHUN</label>
+                        <select id="inputYear" onchange="loadInputTable()">
+                            <option value="">Pilih Tahun</option>
+                            <option value="2026">2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                        </select>
+                    </div>
+                </div>
 
-                    <div id="monthlyTableContainer" class="table-container" style="display: none;">
-                        <table id="monthlyTable">
+                <div id="inputTableWrapper" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 10px;">
+                        <h2 style="font-size: 1.1rem;">Input Data <span id="periodTitle" style="color: var(--primary);"></span></h2>
+                        <span id="dataStatus" class="badge">Data Baru</span>
+                    </div>
+                    
+                    <div class="input-table-container">
+                        <table class="input-table">
                             <thead>
                                 <tr>
-                                    <th>LOKASI WISATA</th>
-                                    <th style="color: var(--secondary);">WISMAN</th>
-                                    <th style="color: var(--primary);">WISNUS</th>
-                                    <th>TOTAL</th>
+                                    <th style="width: 40%;">LOKASI WISATA</th>
+                                    <th style="width: 30%;">MANCANEGARA</th>
+                                    <th style="width: 30%;">NUSANTARA</th>
                                 </tr>
                             </thead>
-                            <tbody id="monthlyTableBody"></tbody>
+                            <tbody id="inputTableBody">
+                                <!-- Rows will be added here dynamically -->
+                            </tbody>
                         </table>
-                        
-                        <button onclick="saveMonthlyData()" class="btn-main" style="margin: 20px 10px 10px 10px;">
-                            <i class="fas fa-save"></i> SIMPAN DATA BULANAN
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; margin-top: 25px;">
+                        <button onclick="saveAllData()" class="btn-main" style="flex: 2;">
+                            <i class="fas fa-save"></i> SIMPAN DATA PERIODE INI
+                        </button>
+                        <button onclick="resetInputs()" class="action-btn btn-cancel" style="flex: 1;">
+                            <i class="fas fa-redo"></i> RESET
                         </button>
                     </div>
+                    
+                    <div style="text-align: center; margin-top: 15px;">
+                        <p id="totalInputDisplay" style="font-size: 0.85rem; color: #64748b; font-weight: 600;">
+                            Total: <span style="color: var(--primary); font-weight: 800;">0</span> wisatawan
+                        </p>
+                    </div>
+                </div>
+                
+                <div id="emptyState" style="text-align: center; padding: 50px 20px; color: #94a3b8;">
+                    <div style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 style="margin-bottom: 10px; color: #64748b;">Pilih Bulan dan Tahun</h3>
+                    <p style="font-size: 0.9rem;">Pilih bulan dan tahun di atas untuk mulai input data.</p>
                 </div>
             </div>
 
             <div id="tab-set" class="tab-pane">
-                <!-- User Management -->
-                <div id="userManagementSection" class="admin-only" style="background: white; padding: 35px; border-radius: 40px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.03);">
-                    <h3 style="margin-bottom: 20px;">
-                        <i class="fas fa-users-cog"></i> Manajemen Pengguna
-                    </h3>
-                    
-                    <!-- Add User Form -->
-                    <div style="background: #f0fdf4; padding: 20px; border-radius: 25px; margin-bottom: 25px;">
-                        <h4 style="margin-bottom: 15px; font-size: 0.9rem; color: var(--dark);">Tambah Pengguna Baru</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                            <input type="text" id="newUsername" placeholder="Username">
-                            <input type="password" id="newPassword" placeholder="Password">
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                            <select id="newUserRole">
-                                <option value="admin">Administrator</option>
-                                <option value="operator">Operator</option>
-                                <option value="viewer">Viewer</option>
-                            </select>
-                            <select id="newUserLocation">
-                                <option value="all">Semua Lokasi</option>
-                            </select>
-                        </div>
-                        <button onclick="addNewUser()" class="btn-main">
-                            <i class="fas fa-user-plus"></i> TAMBAH PENGGUNA
-                        </button>
-                    </div>
-
-                    <!-- Users List -->
-                    <div class="table-container">
-                        <table class="user-table">
-                            <thead>
-                                <tr>
-                                    <th>USERNAME</th>
-                                    <th>ROLE</th>
-                                    <th>LOKASI</th>
-                                    <th>AKSI</th>
-                                </tr>
-                            </thead>
-                            <tbody id="usersList"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Settings -->
                 <div style="background: white; padding: 35px; border-radius: 40px; margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 20px;">
-                        <i class="fas fa-lock"></i> Keamanan Admin
-                    </h3>
+                    <h3 style="margin-bottom: 20px;">Keamanan Admin</h3>
                     <input type="password" id="oldP" placeholder="Password Lama">
                     <input type="password" id="newP" placeholder="Password Baru">
-                    <button onclick="updatePass()" class="btn-main" style="background:var(--dark)">
-                        <i class="fas fa-key"></i> GANTI PASSWORD
-                    </button>
+                    <button onclick="updatePass()" class="btn-main" style="background:var(--dark)">GANTI PASSWORD</button>
                 </div>
-                
-                <!-- Location Management -->
                 <div style="background: white; padding: 35px; border-radius: 40px;">
-                    <h3 style="margin-bottom: 20px;">
-                        <i class="fas fa-map-marker-alt"></i> Manajemen Lokasi Wisata
-                    </h3>
+                    <h3 style="margin-bottom: 20px;">Manajemen Lokasi</h3>
                     <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                        <input type="text" id="newD" placeholder="Nama Lokasi Wisata..." style="margin:0;">
+                        <input type="text" id="newD" placeholder="Nama Lokasi..." style="margin:0;">
                         <button onclick="addDest()" class="btn-main" style="width: 70px;">+</button>
                     </div>
                     <div id="masterList"></div>
@@ -440,505 +298,223 @@
         </div>
 
         <nav class="nav-bar">
-            <button class="nav-btn active" onclick="switchTab('tab-home', this)">
-                <i class="fas fa-home"></i>Dashboard
-            </button>
-            <button class="nav-btn admin-only" onclick="switchTab('tab-add', this)">
-                <i class="fas fa-plus-circle"></i>Input Data
-            </button>
-            <button class="nav-btn admin-only" onclick="switchTab('tab-set', this)">
-                <i class="fas fa-cog"></i>Pengaturan
-            </button>
+            <button class="nav-btn active" onclick="switchTab('tab-home', this)"><i class="fas fa-home"></i>Home</button>
+            <button class="nav-btn admin-only" onclick="switchTab('tab-add', this)"><i class="fas fa-plus-circle"></i>Input</button>
+            <button class="nav-btn admin-only" onclick="switchTab('tab-set', this)"><i class="fas fa-cog"></i>Settings</button>
         </nav>
     </div>
 
     <script>
         const SB_URL = "https://jtszbrvkkbfigxgehmpv.supabase.co";
-        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0c3picnZra2JmaWd4Z2VobXB2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc3MTQ5NzksImV4cCI6MjA1MzI5MDk3OX0.pX7pF6m70vRnFCxVFXY1Sai7ck-1FhIYw2ohxCcvqHE";
+        const SB_KEY = "sb_publishable_2HDMnWs-FcznJwtNzoUeQQ_neJmXzc9";
         const sb = supabase.createClient(SB_URL, SB_KEY);
 
         let isAdmin = false;
-        let currentUser = null;
         let dbData = [];
         let chart = null;
-        let chartType = 'line';
-        let adminPass = localStorage.getItem('sip_pass_v14_cihaurbeuti') || 'admin123';
+        let adminPass = localStorage.getItem('sip_pass_v13') || 'admin123';
         const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-        
-        // Variabel global untuk data bulanan
-        let monthlyData = {};
-        let destinationsList = [];
-        
-        // User management data
-        let users = [
-            { username: 'admin', password: 'admin123', role: 'admin', location: 'all', id: 1 }
-        ];
-
-        function showAdminLogin() {
-            document.getElementById('publicLogin').style.display = 'none';
-            document.getElementById('adminLogin').style.display = 'block';
-        }
-
-        function showPublicLogin() {
-            document.getElementById('adminLogin').style.display = 'none';
-            document.getElementById('publicLogin').style.display = 'block';
-        }
-
-        function updateLoginForm() {
-            const role = document.getElementById('loginRole').value;
-            // Future: Update form based on role
-        }
+        let destinations = []; // Data lokasi
+        let currentMonth = '';
+        let currentYear = '';
 
         function auth(mode) {
+            const u = document.getElementById('userIn').value;
+            const p = document.getElementById('passIn').value;
             if(mode === 'admin') {
-                const username = document.getElementById('userIn').value;
-                const password = document.getElementById('passIn').value;
-                const role = document.getElementById('loginRole').value;
-                
-                // Check if user exists
-                const user = users.find(u => 
-                    u.username === username && 
-                    u.password === password &&
-                    u.role === role
-                );
-                
-                if(user) {
+                if(u === 'admin' && p === adminPass) {
                     isAdmin = true;
-                    currentUser = user;
-                    setupUserPermissions();
-                } else {
-                    return alert("Login gagal! Periksa username dan password.");
-                }
-            } else {
-                currentUser = { role: 'public', location: 'all' };
+                    document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'flex');
+                    document.getElementById('roleTag').innerText = "Administrator Mode";
+                    document.getElementById('publicView').style.display = 'none';
+                    document.getElementById('adminView').classList.remove('hidden');
+                    document.getElementById('btnPdf').style.display = 'none';
+                } else { return alert("Gagal Login!"); }
             }
-            
             document.getElementById('loginScreen').style.display = 'none';
             init();
         }
 
-        function setupUserPermissions() {
-            const role = currentUser.role;
-            const roleNames = {
-                'admin': 'Administrator',
-                'operator': 'Operator',
-                'viewer': 'Viewer',
-                'public': 'Publik'
-            };
-            
-            // Update UI based on role
-            document.getElementById('roleTag').innerText = roleNames[role];
-            document.getElementById('userBadge').innerText = roleNames[role].toUpperCase();
-            document.getElementById('userBadge').className = `role-badge role-${role}`;
-            document.getElementById('userBadge').style.display = 'inline-block';
-            
-            // Show/hide elements based on role
-            if(role === 'admin') {
-                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
-                document.getElementById('publicView').style.display = 'none';
-                document.getElementById('adminView').classList.remove('hidden');
-                document.getElementById('userManagementSection').style.display = 'block';
-                document.getElementById('headerTitle').innerText = 'Panel Admin Wisata Cihaurbeuti';
-            } else if(role === 'operator') {
-                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
-                document.getElementById('publicView').style.display = 'block';
-                document.getElementById('adminView').classList.add('hidden');
-                document.getElementById('userManagementSection').style.display = 'none';
-                document.getElementById('headerTitle').innerText = 'Panel Operator Wisata Cihaurbeuti';
-            } else if(role === 'viewer') {
-                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'none');
-                document.getElementById('publicView').style.display = 'block';
-                document.getElementById('adminView').classList.add('hidden');
-                document.getElementById('headerTitle').innerText = 'Dashboard Wisata Cihaurbeuti';
-            } else {
-                document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'none');
-                document.getElementById('publicView').style.display = 'block';
-                document.getElementById('adminView').classList.add('hidden');
-                document.getElementById('headerTitle').innerText = 'Dashboard Kunjungan Wisata Cihaurbeuti';
-            }
-        }
-
         function init() {
-            setupMonthlyForm();
-            setupYearMonthFilters();
-            loadUsersList();
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+            
+            // Set default values for filters
+            document.getElementById('monthFilter').value = currentMonth.toString();
+            document.getElementById('yearFilter').value = currentYear.toString();
+            
+            // Set default values for input
+            document.getElementById('inputMonth').value = currentMonth.toString();
+            document.getElementById('inputYear').value = currentYear.toString();
+            
             fetchData();
-        }
-
-        function setupMonthlyForm() {
-            const b = document.getElementById('fBln');
-            const t = document.getElementById('fThn');
-            
-            // Setup bulan
-            b.innerHTML = '<option value="">Pilih Bulan</option>';
-            months.forEach((m, i) => {
-                b.innerHTML += `<option value="${i+1}">${m}</option>`;
-            });
-            
-            // Setup tahun
-            t.innerHTML = '<option value="">Pilih Tahun</option>';
-            const currentYear = new Date().getFullYear();
-            for(let y = currentYear; y >= 2024; y--) {
-                t.innerHTML += `<option value="${y}">${y}</option>`;
-            }
-        }
-
-        function setupYearMonthFilters() {
-            const monthFrom = document.getElementById('monthFrom');
-            const monthTo = document.getElementById('monthTo');
-            const yearFrom = document.getElementById('yearFrom');
-            const yearTo = document.getElementById('yearTo');
-            
-            // Setup bulan
-            monthFrom.innerHTML = '<option value="all">Semua Bulan</option>';
-            monthTo.innerHTML = '<option value="all">Semua Bulan</option>';
-            months.forEach((m, i) => {
-                monthFrom.innerHTML += `<option value="${i+1}">${m}</option>`;
-                monthTo.innerHTML += `<option value="${i+1}">${m}</option>`;
-            });
-            
-            // Setup tahun
-            yearFrom.innerHTML = '<option value="all">Semua Tahun</option>';
-            yearTo.innerHTML = '<option value="all">Semua Tahun</option>';
-            const currentYear = new Date().getFullYear();
-            for(let y = currentYear; y >= 2020; y--) {
-                yearFrom.innerHTML += `<option value="${y}">${y}</option>`;
-                yearTo.innerHTML += `<option value="${y}">${y}</option>`;
-            }
         }
 
         async function fetchData() {
             showLoad(true);
+            const { data: d } = await sb.from('destinations').select('*').order('name');
+            const { data: l } = await sb.from('visitor_logs').select('*, destinations(name)').order('created_at', {ascending: false});
+            dbData = l || [];
+            destinations = d || [];
             
-            try {
-                // Ambil data destinations
-                const { data: destinations, error: destError } = await sb
-                    .from('destinations')
-                    .select('*')
-                    .order('name');
-                
-                if(destError) {
-                    console.error('Error fetching destinations:', destError);
-                    throw destError;
-                }
-                
-                // Ambil data visitor_logs dengan join destinations
-                const { data: logs, error: logsError } = await sb
-                    .from('visitor_logs')
-                    .select(`
-                        id,
-                        month,
-                        year,
-                        destination_id,
-                        natural_count,
-                        manmade_count,
-                        total,
-                        created_at,
-                        destinations (
-                            id,
-                            name
-                        )
-                    `)
-                    .order('created_at', { ascending: false });
-                
-                if(logsError) {
-                    console.error('Error fetching logs:', logsError);
-                    throw logsError;
-                }
-                
-                dbData = logs || [];
-                destinationsList = destinations || [];
-                
-                // Update UI
-                const f = document.getElementById('mainFilter');
-                const ml = document.getElementById('masterList');
-                const newUserLoc = document.getElementById('newUserLocation');
-                
-                f.innerHTML = '<option value="all">Semua Lokasi</option>';
-                ml.innerHTML = '';
-                newUserLoc.innerHTML = '<option value="all">Semua Lokasi</option>';
-                
-                destinations?.forEach(item => {
-                    f.innerHTML += `<option value="${item.id}">${item.name}</option>`;
-                    newUserLoc.innerHTML += `<option value="${item.id}">${item.name}</option>`;
-                    ml.innerHTML += `<div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #d1fae5; align-items:center;">
-                        <b style="font-size:0.9rem;">${item.name}</b>
-                        <button onclick="delDest(${item.id})" style="background:#fee2e2; color:var(--danger); border:none; padding:8px 12px; border-radius:12px;"><i class="fas fa-trash"></i></button>
-                    </div>`;
-                });
-                
-                runFilter();
-                calculateKPIs();
-                
-            } catch(error) {
-                console.error('Fatal error in fetchData:', error);
-                alert('Gagal memuat data dari database. Periksa koneksi Supabase.');
+            const f = document.getElementById('mainFilter');
+            const ml = document.getElementById('masterList');
+            f.innerHTML = '<option value="all">Semua Lokasi</option>';
+            ml.innerHTML = '';
+
+            destinations.forEach(item => {
+                f.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+                ml.innerHTML += `<div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #f1f5f9; align-items:center;">
+                    <b style="font-size:0.9rem;">${item.name}</b>
+                    <button onclick="delDest(${item.id})" style="background:#fff1f2; color:var(--secondary); border:none; padding:8px 12px; border-radius:12px;"><i class="fas fa-trash"></i></button>
+                </div>`;
+            });
+            
+            runFilter();
+            
+            // Load input table if we're on the input tab
+            if(document.getElementById('tab-add').classList.contains('tab-active')) {
+                loadInputTable();
             }
             
             showLoad(false);
         }
 
-        function applyAdvancedFilter() {
-            runFilter();
-        }
-
-        function resetFilters() {
-            document.getElementById('mainFilter').value = 'all';
-            document.getElementById('typeFilter').value = 'all';
-            document.getElementById('monthFrom').value = 'all';
-            document.getElementById('monthTo').value = 'all';
-            document.getElementById('yearFrom').value = 'all';
-            document.getElementById('yearTo').value = 'all';
-            runFilter();
-        }
-
         function runFilter() {
             const loc = document.getElementById('mainFilter').value;
-            const type = document.getElementById('typeFilter').value;
-            const monthFrom = document.getElementById('monthFrom').value;
-            const monthTo = document.getElementById('monthTo').value;
-            const yearFrom = document.getElementById('yearFrom').value;
-            const yearTo = document.getElementById('yearTo').value;
+            const month = document.getElementById('monthFilter').value;
+            const year = document.getElementById('yearFilter').value;
             
-            let filtered = loc === 'all' ? [...dbData] : dbData.filter(x => x.destination_id == loc);
+            let filtered = dbData;
             
-            // Filter by type (natural_count = Wisman, manmade_count = Wisnus)
-            if(type === 'manca') filtered = filtered.filter(x => x.natural_count > x.manmade_count);
-            if(type === 'nusa') filtered = filtered.filter(x => x.manmade_count > x.natural_count);
-            
-            // Filter by date range
-            if(yearFrom !== 'all') {
-                filtered = filtered.filter(x => x.year >= parseInt(yearFrom));
-            }
-            if(yearTo !== 'all') {
-                filtered = filtered.filter(x => x.year <= parseInt(yearTo));
-            }
-            if(monthFrom !== 'all') {
-                filtered = filtered.filter(x => x.month >= parseInt(monthFrom));
-            }
-            if(monthTo !== 'all') {
-                filtered = filtered.filter(x => x.month <= parseInt(monthTo));
+            // Filter lokasi
+            if(loc !== 'all') {
+                filtered = filtered.filter(x => x.destination_id == loc);
             }
             
-            // Sort by date descending
-            filtered.sort((a, b) => {
-                if(a.year !== b.year) return b.year - a.year;
-                return b.month - a.month;
-            });
-
+            // Filter bulan
+            if(month !== 'all') {
+                filtered = filtered.filter(x => x.month == month);
+            }
+            
+            // Filter tahun
+            if(year !== 'all') {
+                filtered = filtered.filter(x => x.year == year);
+            }
+            
             let total = 0;
             const tb = document.getElementById('tbody');
             const av = document.getElementById('adminView');
             tb.innerHTML = ''; av.innerHTML = '';
 
-            let previousMonthData = null;
-            
             filtered.forEach(i => {
-                total += i.total;
-                
-                // Calculate trend
-                let trend = '';
-                if(previousMonthData) {
-                    const change = i.total - previousMonthData.total;
-                    const percent = previousMonthData.total > 0 ? Math.round((change / previousMonthData.total) * 100) : 0;
-                    trend = `<span style="color:${change >= 0 ? '#10b981' : '#ef4444'}">${change >= 0 ? '+' : ''}${percent}%</span>`;
-                }
-                
+                const totalItem = i.natural_count + i.manmade_count;
+                total += totalItem;
                 tb.innerHTML += `<tr>
-                    <td style="color:#64748b">${months[i.month-1].substr(0,3)} ${i.year}</td>
-                    <td>${i.destinations?.name}</td>
-                    <td>${i.natural_count.toLocaleString()}</td>
-                    <td>${i.manmade_count.toLocaleString()}</td>
-                    <td style="color:var(--primary); font-weight:800;">${i.total.toLocaleString()}</td>
-                    <td style="font-size:0.7rem; font-weight:800;">${trend}</td>
+                    <td style="color:#64748b">${months[i.month-1]?.substr(0,3) || 'N/A'} ${i.year}</td>
+                    <td>${i.destinations?.name || 'Tidak diketahui'}</td>
+                    <td>${i.natural_count}</td>
+                    <td>${i.manmade_count}</td>
+                    <td style="color:var(--primary)">${totalItem}</td>
                 </tr>`;
-                
-                previousMonthData = i;
-                
-                // Admin view
-                if(currentUser?.role === 'admin') {
-                    av.innerHTML += `<div class="admin-card">
-                        <div><b>${i.destinations?.name}</b><p style="font-size:0.75rem; color:#64748b;">${months[i.month-1]} ${i.year}</p></div>
-                        <div style="text-align:right">
-                            <b>${i.total.toLocaleString()}</b><br>
-                            <span onclick="delLog(${i.id})" style="color:var(--danger); font-size:0.7rem; font-weight:800; cursor:pointer;">HAPUS</span>
-                        </div>
-                    </div>`;
-                }
+                av.innerHTML += `<div class="admin-card">
+                    <div><b>${i.destinations?.name || 'Tidak diketahui'}</b><p style="font-size:0.75rem; color:#64748b;">${months[i.month-1] || 'N/A'} ${i.year}</p></div>
+                    <div style="text-align:right"><b>${totalItem}</b><br><span onclick="delLog(${i.id})" style="color:var(--secondary); font-size:0.7rem; font-weight:800; cursor:pointer;">HAPUS</span></div>
+                </div>`;
             });
             
             document.getElementById('totalVisit').innerText = total.toLocaleString();
-            document.getElementById('locTag').innerText = document.getElementById('mainFilter').options[document.getElementById('mainFilter').selectedIndex].text;
-            document.getElementById('dataCount').innerText = `${filtered.length} data ditemukan`;
             
-            renderChart(filtered);
-            calculateKPIs();
-        }
-
-        function calculateKPIs() {
-            if(dbData.length === 0) return;
+            // Update filter tag
+            const locText = document.getElementById('mainFilter').options[document.getElementById('mainFilter').selectedIndex].text;
+            const monthText = document.getElementById('monthFilter').options[document.getElementById('monthFilter').selectedIndex].text;
+            const yearText = document.getElementById('yearFilter').options[document.getElementById('yearFilter').selectedIndex].text;
             
-            // Calculate average monthly
-            const monthlyTotals = {};
-            dbData.forEach(item => {
-                const key = `${item.year}-${item.month}`;
-                if(!monthlyTotals[key]) monthlyTotals[key] = 0;
-                monthlyTotals[key] += item.total;
-            });
-            
-            const avgMonthly = Object.values(monthlyTotals).reduce((a, b) => a + b, 0) / Object.keys(monthlyTotals).length;
-            document.getElementById('avgMonthly').innerText = Math.round(avgMonthly).toLocaleString();
-            
-            // Calculate YoY growth
-            const currentYear = new Date().getFullYear();
-            const lastYearTotal = dbData.filter(x => x.year === currentYear - 1).reduce((sum, x) => sum + x.total, 0);
-            const currentYearTotal = dbData.filter(x => x.year === currentYear).reduce((sum, x) => sum + x.total, 0);
-            
-            let yoyGrowth = 0;
-            if(lastYearTotal > 0) {
-                yoyGrowth = Math.round(((currentYearTotal - lastYearTotal) / lastYearTotal) * 100);
+            let filterText = '';
+            if(loc !== 'all' || month !== 'all' || year !== 'all') {
+                filterText = `${loc !== 'all' ? locText + ' • ' : ''}${month !== 'all' ? monthText + ' • ' : ''}${year !== 'all' ? yearText : ''}`;
+                filterText = filterText.endsWith(' • ') ? filterText.slice(0, -3) : filterText;
+            } else {
+                filterText = 'Semua Data';
             }
             
-            document.getElementById('yoyGrowth').innerText = `${yoyGrowth}%`;
-            document.getElementById('yoyTrend').innerText = yoyGrowth >= 0 ? `+${yoyGrowth}%` : `${yoyGrowth}%`;
-            document.getElementById('yoyTrend').className = `trend ${yoyGrowth >= 0 ? 'trend-up' : 'trend-down'}`;
-            
-            // Find top location
-            const locationTotals = {};
-            dbData.forEach(item => {
-                const loc = item.destinations?.name || 'Unknown';
-                if(!locationTotals[loc]) locationTotals[loc] = 0;
-                locationTotals[loc] += item.total;
-            });
-            
-            let topLocation = '';
-            let topLocationCount = 0;
-            Object.entries(locationTotals).forEach(([loc, total]) => {
-                if(total > topLocationCount) {
-                    topLocationCount = total;
-                    topLocation = loc;
-                }
-            });
-            
-            document.getElementById('topLocation').innerText = topLocation.substring(0, 15) + (topLocation.length > 15 ? '...' : '');
-            document.getElementById('topLocationCount').innerText = topLocationCount.toLocaleString() + ' wisatawan';
-            
-            // Find peak month
-            const monthTotals = {};
-            dbData.forEach(item => {
-                const monthKey = `${months[item.month-1]} ${item.year}`;
-                if(!monthTotals[monthKey]) monthTotals[monthKey] = 0;
-                monthTotals[monthKey] += item.total;
-            });
-            
-            let peakMonth = '';
-            let peakMonthCount = 0;
-            Object.entries(monthTotals).forEach(([month, total]) => {
-                if(total > peakMonthCount) {
-                    peakMonthCount = total;
-                    peakMonth = month;
-                }
-            });
-            
-            document.getElementById('peakMonth').innerText = peakMonth;
-            document.getElementById('peakMonthCount').innerText = peakMonthCount.toLocaleString() + ' wisatawan';
-        }
-
-        function updateChartType() {
-            chartType = document.getElementById('chartType').value;
-            runFilter();
+            document.getElementById('filterTag').innerText = filterText;
+            renderChart(filtered);
         }
 
         function renderChart(data) {
             const ctx = document.getElementById('mainChart').getContext('2d');
             if(chart) chart.destroy();
             
-            const slice = [...data].reverse().slice(-12);
-            
-            let chartConfig;
-            
-            if(chartType === 'line' || chartType === 'bar') {
-                chartConfig = {
-                    type: chartType,
-                    data: {
-                        labels: slice.map(s => `${months[s.month-1].substr(0,3)} ${s.year.toString().substr(2)}`),
-                        datasets: [{
-                            label: 'Total Wisatawan',
-                            data: slice.map(s => s.total),
-                            borderColor: '#10b981',
-                            backgroundColor: chartType === 'bar' ? 'rgba(16, 185, 129, 0.7)' : 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: chartType === 'line' ? 4 : 2,
-                            tension: chartType === 'line' ? 0.4 : 0,
-                            fill: chartType === 'line',
-                            pointRadius: chartType === 'line' ? 5 : 0,
-                            pointBackgroundColor: '#fff'
-                        }]
-                    },
+            if(data.length === 0) {
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: [], datasets: [] },
                     options: { 
                         plugins: { 
-                            legend: { 
-                                display: false 
-                            } 
+                            legend: { display: false },
+                            title: { display: true, text: 'Tidak ada data untuk ditampilkan', color: '#64748b' }
                         }, 
-                        scales: { 
-                            y: { 
-                                beginAtZero: true,
-                                grid: { color: 'rgba(0,0,0,0.05)' }
-                            }, 
-                            x: { 
-                                grid: { display: false } 
-                            } 
-                        } 
+                        scales: { y: { display: false }, x: { display: false } } 
                     }
-                };
-            } else if(chartType === 'pie') {
-                // Group by location for pie chart
-                const locationData = {};
-                data.slice(-20).forEach(item => {
-                    const loc = item.destinations?.name || 'Unknown';
-                    if(!locationData[loc]) locationData[loc] = 0;
-                    locationData[loc] += item.total;
                 });
-                
-                const topLocations = Object.entries(locationData)
-                    .sort((a, b) => b[1] - a[1])
-                    .slice(0, 8);
-                
-                const colors = [
-                    '#10b981', '#059669', '#34d399', '#6ee7b7',
-                    '#a7f3d0', '#d1fae5', '#6366f1', '#8b5cf6'
-                ];
-                
-                chartConfig = {
-                    type: 'pie',
-                    data: {
-                        labels: topLocations.map(([loc]) => loc),
-                        datasets: [{
-                            data: topLocations.map(([, total]) => total),
-                            backgroundColor: colors,
-                            borderWidth: 2,
-                            borderColor: '#fff'
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 20,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle',
-                                    font: {
-                                        size: 10
-                                    }
-                                }
-                            }
-                        }
-                    }
-                };
+                return;
             }
             
-            chart = new Chart(ctx, chartConfig);
+            const groupedData = {};
+            data.forEach(item => {
+                const key = `${item.year}-${item.month}`;
+                if(!groupedData[key]) {
+                    groupedData[key] = {
+                        month: item.month,
+                        year: item.year,
+                        total: 0
+                    };
+                }
+                groupedData[key].total += (item.natural_count + item.manmade_count);
+            });
+            
+            const sortedKeys = Object.keys(groupedData).sort();
+            const slice = sortedKeys.slice(-6);
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: slice.map(key => {
+                        const d = groupedData[key];
+                        return `${months[d.month-1]?.substr(0,3) || 'N/A'} ${d.year}`;
+                    }),
+                    datasets: [{
+                        data: slice.map(key => groupedData[key].total),
+                        borderColor: '#6366f1',
+                        borderWidth: 4,
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(99, 102, 241, 0.05)',
+                        pointRadius: 5,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6366f1',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: { 
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        y: { 
+                            display: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { font: { size: 10 } }
+                        }, 
+                        x: { 
+                            grid: { display: false },
+                            ticks: { font: { size: 10 } }
+                        } 
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
         }
 
         function switchTab(id, btn) {
@@ -946,450 +522,263 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('tab-active');
             btn.classList.add('active');
-            if(id === 'tab-home') runFilter();
-            if(id === 'tab-set') loadUsersList();
+            
+            if(id === 'tab-home') {
+                runFilter();
+            } else if(id === 'tab-add') {
+                loadInputTable();
+            }
         }
 
-        // Function untuk load data bulanan
-        async function loadMonthData() {
-            const month = document.getElementById('fBln').value;
-            const year = document.getElementById('fThn').value;
+        function loadInputTable() {
+            currentMonth = document.getElementById('inputMonth').value;
+            currentYear = document.getElementById('inputYear').value;
             
-            if(!month || !year) return;
-            
-            showLoad(true);
-            
-            // Ambil data destinasi
-            const { data: dests, error: destsError } = await sb.from('destinations').select('*').order('name');
-            
-            if(destsError) {
-                console.error('Error loading destinations:', destsError);
-                showLoad(false);
+            if(!currentMonth || !currentYear) {
+                document.getElementById('inputTableWrapper').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
                 return;
             }
             
-            destinationsList = dests || [];
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('inputTableWrapper').style.display = 'block';
             
-            // Ambil data yang sudah ada untuk bulan tersebut
-            const { data: existing, error: existingError } = await sb.from('visitor_logs')
-                .select('*')
-                .eq('month', parseInt(month))
-                .eq('year', parseInt(year));
+            const monthName = months[parseInt(currentMonth) - 1];
+            document.getElementById('periodTitle').innerText = `${monthName} ${currentYear}`;
             
-            if(existingError) {
-                console.error('Error loading existing data:', existingError);
+            const inputTableBody = document.getElementById('inputTableBody');
+            inputTableBody.innerHTML = '';
+            
+            let totalWisatawan = 0;
+            
+            // Check existing data for this period
+            const existingData = dbData.filter(item => 
+                item.month == currentMonth && item.year == currentYear
+            );
+            
+            // Update status badge
+            const dataStatus = document.getElementById('dataStatus');
+            if(existingData.length > 0) {
+                dataStatus.innerText = 'Data Tersedia';
+                dataStatus.style.background = '#fbbf24';
+            } else {
+                dataStatus.innerText = 'Data Baru';
+                dataStatus.style.background = '#10b981';
             }
             
-            // Reset data bulanan
-            monthlyData = {};
-            
-            // Inisialisasi data untuk semua destinasi
-            destinationsList.forEach(dest => {
-                // Cari data yang sudah ada
-                const existingData = existing?.find(e => e.destination_id === dest.id);
+            // Create input rows for each destination
+            destinations.forEach(destination => {
+                // Find existing data for this destination
+                const existing = existingData.find(item => 
+                    item.destination_id === destination.id
+                );
                 
-                monthlyData[dest.id] = {
-                    destination_id: dest.id,
-                    destination_name: dest.name,
-                    month: parseInt(month),
-                    year: parseInt(year),
-                    natural_count: existingData?.natural_count || 0,
-                    manmade_count: existingData?.manmade_count || 0,
-                    id: existingData?.id // Untuk update jika sudah ada
-                };
-            });
-            
-            renderMonthlyTable();
-            showLoad(false);
-        }
-
-        // Render tabel bulanan
-        function renderMonthlyTable() {
-            const container = document.getElementById('monthlyTableContainer');
-            const tbody = document.getElementById('monthlyTableBody');
-            
-            if(destinationsList.length === 0) {
-                container.style.display = 'none';
-                return;
-            }
-            
-            tbody.innerHTML = '';
-            
-            destinationsList.forEach(dest => {
-                const data = monthlyData[dest.id];
+                const mancaValue = existing ? existing.natural_count : 0;
+                const nusaValue = existing ? existing.manmade_count : 0;
+                const rowTotal = mancaValue + nusaValue;
+                totalWisatawan += rowTotal;
                 
-                tbody.innerHTML += `
-                    <tr style="border-bottom: 1px solid #d1fae5;">
-                        <td style="padding: 15px 10px;">
-                            <b style="font-size: 0.85rem;">${dest.name}</b>
-                        </td>
-                        <td style="padding: 10px;">
-                            <input type="number" 
-                                   class="monthly-input"
-                                   value="${data.natural_count}" 
-                                   onchange="updateMonthlyData(${dest.id}, 'natural_count', this.value)"
-                                   min="0"
-                                   placeholder="Wisman">
-                        </td>
-                        <td style="padding: 10px;">
-                            <input type="number" 
-                                   class="monthly-input"
-                                   value="${data.manmade_count}" 
-                                   onchange="updateMonthlyData(${dest.id}, 'manmade_count', this.value)"
-                                   min="0"
-                                   placeholder="Wisnus">
-                        </td>
-                        <td style="padding: 15px 10px; text-align: center; color: var(--primary); font-weight: 800;">
-                            ${parseInt(data.natural_count || 0) + parseInt(data.manmade_count || 0)}
-                        </td>
-                    </tr>
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="lokasi-cell">${destination.name}</td>
+                    <td>
+                        <input type="number" 
+                               id="manca_${destination.id}" 
+                               value="${mancaValue}" 
+                               min="0" 
+                               oninput="updateTotalDisplay()"
+                               placeholder="0">
+                    </td>
+                    <td>
+                        <input type="number" 
+                               id="nusa_${destination.id}" 
+                               value="${nusaValue}" 
+                               min="0" 
+                               oninput="updateTotalDisplay()"
+                               placeholder="0">
+                    </td>
                 `;
+                
+                inputTableBody.appendChild(row);
             });
             
-            container.style.display = 'block';
+            updateTotalDisplay();
         }
 
-        // Update data di memory
-        function updateMonthlyData(destId, field, value) {
-            if(monthlyData[destId]) {
-                monthlyData[destId][field] = parseInt(value) || 0;
+        function updateTotalDisplay() {
+            let total = 0;
+            
+            destinations.forEach(destination => {
+                const mancaInput = document.getElementById(`manca_${destination.id}`);
+                const nusaInput = document.getElementById(`nusa_${destination.id}`);
                 
-                // Update total di UI
-                const row = document.querySelector(`input[onchange*="updateMonthlyData(${destId}, 'natural_count'"]`).closest('tr');
-                if(row) {
-                    const naturalVal = parseInt(monthlyData[destId].natural_count) || 0;
-                    const manmadeVal = parseInt(monthlyData[destId].manmade_count) || 0;
-                    const totalCell = row.querySelector('td:last-child');
-                    if(totalCell) {
-                        totalCell.textContent = naturalVal + manmadeVal;
-                    }
+                if(mancaInput && nusaInput) {
+                    const mancaValue = parseInt(mancaInput.value) || 0;
+                    const nusaValue = parseInt(nusaInput.value) || 0;
+                    total += mancaValue + nusaValue;
                 }
+            });
+            
+            document.getElementById('totalInputDisplay').innerHTML = 
+                `Total: <span style="color: var(--primary); font-weight: 800;">${total.toLocaleString()}</span> wisatawan`;
+        }
+
+        function resetInputs() {
+            if(confirm('Reset semua input ke nilai 0?')) {
+                destinations.forEach(destination => {
+                    const mancaInput = document.getElementById(`manca_${destination.id}`);
+                    const nusaInput = document.getElementById(`nusa_${destination.id}`);
+                    
+                    if(mancaInput) mancaInput.value = 0;
+                    if(nusaInput) nusaInput.value = 0;
+                });
+                updateTotalDisplay();
             }
         }
 
-        // Save semua data bulanan - DIPERBAIKI
-        async function saveMonthlyData() {
-            const month = document.getElementById('fBln').value;
-            const year = document.getElementById('fThn').value;
-            
-            if(!month || !year) {
+        async function saveAllData() {
+            if(!currentMonth || !currentYear) {
                 alert('Pilih bulan dan tahun terlebih dahulu!');
                 return;
             }
             
+            const monthName = months[parseInt(currentMonth) - 1];
+            if(!confirm(`Simpan data untuk periode ${monthName} ${currentYear}?`)) {
+                return;
+            }
+            
             showLoad(true);
             
-            // Siapkan data untuk disimpan
-            const dataToSave = Object.values(monthlyData).map(item => {
-                const payload = {
-                    month: parseInt(item.month),
-                    year: parseInt(item.year),
-                    destination_id: item.destination_id,
-                    natural_count: parseInt(item.natural_count) || 0,
-                    manmade_count: parseInt(item.manmade_count) || 0,
-                    total: (parseInt(item.natural_count) || 0) + (parseInt(item.manmade_count) || 0)
-                };
+            const dataToSave = [];
+            
+            destinations.forEach(destination => {
+                const mancaInput = document.getElementById(`manca_${destination.id}`);
+                const nusaInput = document.getElementById(`nusa_${destination.id}`);
                 
-                return payload;
+                if(mancaInput && nusaInput) {
+                    const mancaValue = parseInt(mancaInput.value) || 0;
+                    const nusaValue = parseInt(nusaInput.value) || 0;
+                    
+                    // Only save if there's at least some data
+                    if(mancaValue > 0 || nusaValue > 0) {
+                        dataToSave.push({
+                            destination_id: destination.id,
+                            month: parseInt(currentMonth),
+                            year: parseInt(currentYear),
+                            natural_count: mancaValue,
+                            manmade_count: nusaValue
+                        });
+                    }
+                }
             });
             
-            // Filter hanya data yang memiliki nilai (tidak semua 0)
-            const filteredData = dataToSave.filter(item => 
-                item.natural_count > 0 || item.manmade_count > 0
-            );
-            
-            if(filteredData.length === 0) {
+            if(dataToSave.length === 0) {
+                alert('Tidak ada data yang akan disimpan. Minimal isi satu lokasi.');
                 showLoad(false);
-                alert('Masukkan data terlebih dahulu!');
                 return;
             }
             
             try {
-                // Hapus data lama untuk bulan/tahun ini
-                const { error: deleteError } = await sb
-                    .from('visitor_logs')
+                // Delete existing data for this period first
+                await sb.from('visitor_logs')
                     .delete()
-                    .eq('month', parseInt(month))
-                    .eq('year', parseInt(year));
+                    .eq('month', currentMonth)
+                    .eq('year', currentYear);
                 
-                if(deleteError) {
-                    console.error('Delete error:', deleteError);
-                }
+                // Insert new data
+                const { error } = await sb.from('visitor_logs').insert(dataToSave);
+                if(error) throw error;
                 
-                // Insert data baru
-                const { data: insertedData, error: insertError } = await sb
-                    .from('visitor_logs')
-                    .insert(filteredData)
-                    .select();
+                alert(`Data untuk ${monthName} ${currentYear} berhasil disimpan!`);
                 
-                if(insertError) {
-                    console.error('Insert error:', insertError);
-                    throw insertError;
-                }
-                
-                console.log('Data berhasil disimpan:', insertedData);
-                alert('Data berhasil disimpan!');
-                
-                // Refresh data dan kembali ke dashboard
+                // Refresh data
                 await fetchData();
-                switchTab('tab-home', document.querySelectorAll('.nav-btn')[0]);
+                
+                // Update status
+                document.getElementById('dataStatus').innerText = 'Data Tersedia';
+                document.getElementById('dataStatus').style.background = '#fbbf24';
                 
             } catch(error) {
                 console.error('Error saving data:', error);
-                alert('Gagal menyimpan data! Periksa console untuk detail.');
+                alert('Terjadi kesalahan saat menyimpan data.');
             }
             
             showLoad(false);
-        }
-
-        // User Management Functions
-        function loadUsersList() {
-            const usersList = document.getElementById('usersList');
-            usersList.innerHTML = '';
-            
-            users.forEach((user, index) => {
-                const roleNames = {
-                    'admin': 'Administrator',
-                    'operator': 'Operator', 
-                    'viewer': 'Viewer'
-                };
-                
-                const locationText = user.location === 'all' ? 'Semua' : 
-                    destinationsList.find(d => d.id == user.location)?.name || user.location;
-                
-                usersList.innerHTML += `
-                    <tr>
-                        <td>${user.username}</td>
-                        <td><span class="role-badge role-${user.role}">${roleNames[user.role]}</span></td>
-                        <td>${locationText}</td>
-                        <td>
-                            ${user.username !== 'admin' ? `
-                                <button onclick="editUser(${index})" style="background:#dcfce7; color:var(--primary); border:none; padding:5px 10px; border-radius:8px; margin-right:5px; font-size:0.7rem;">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button onclick="deleteUser(${index})" style="background:#fee2e2; color:var(--danger); border:none; padding:5px 10px; border-radius:8px; font-size:0.7rem;">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            ` : '-'}
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function addNewUser() {
-            const username = document.getElementById('newUsername').value;
-            const password = document.getElementById('newPassword').value;
-            const role = document.getElementById('newUserRole').value;
-            const location = document.getElementById('newUserLocation').value;
-            
-            if(!username || !password) {
-                alert('Username dan password harus diisi!');
-                return;
-            }
-            
-            if(users.find(u => u.username === username)) {
-                alert('Username sudah digunakan!');
-                return;
-            }
-            
-            const newUser = {
-                username,
-                password,
-                role,
-                location,
-                id: users.length + 1
-            };
-            
-            users.push(newUser);
-            
-            // Clear form
-            document.getElementById('newUsername').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('newUserRole').value = 'admin';
-            document.getElementById('newUserLocation').value = 'all';
-            
-            loadUsersList();
-            alert('Pengguna berhasil ditambahkan!');
-        }
-
-        function editUser(index) {
-            const user = users[index];
-            const newPassword = prompt(`Edit password untuk ${user.username}:`, user.password);
-            if(newPassword) {
-                users[index].password = newPassword;
-                loadUsersList();
-                alert('Password berhasil diupdate!');
-            }
-        }
-
-        function deleteUser(index) {
-            if(confirm('Hapus pengguna ini?')) {
-                users.splice(index, 1);
-                loadUsersList();
-                alert('Pengguna berhasil dihapus!');
-            }
-        }
-
-        // Export Functions
-        function exportToExcel() {
-            const table = document.getElementById('reportTable');
-            const ws = XLSX.utils.table_to_sheet(table);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Data Wisata Cihaurbeuti");
-            XLSX.writeFile(wb, `Data_Wisata_Cihaurbeuti_${new Date().toISOString().split('T')[0]}.xlsx`);
-        }
-
-        function exportToCSV() {
-            const table = document.getElementById('reportTable');
-            const csv = [];
-            
-            // Headers
-            const headers = [];
-            table.querySelectorAll('th').forEach(th => {
-                headers.push(th.innerText);
-            });
-            csv.push(headers.join(','));
-            
-            // Rows
-            table.querySelectorAll('tbody tr').forEach(tr => {
-                const row = [];
-                tr.querySelectorAll('td').forEach(td => {
-                    row.push(td.innerText.replace(/,/g, ''));
-                });
-                csv.push(row.join(','));
-            });
-            
-            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Data_Wisata_Cihaurbeuti_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-        }
-
-        function exportToJSON() {
-            const data = dbData.map(item => ({
-                periode: `${months[item.month-1]} ${item.year}`,
-                lokasi: item.destinations?.name,
-                wisman: item.natural_count,
-                wisnus: item.manmade_count,
-                total: item.total
-            }));
-            
-            const json = JSON.stringify(data, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Data_Wisata_Cihaurbeuti_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-        }
-
-        function downloadPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Header
-            doc.setFontSize(18);
-            doc.text("LAPORAN KUNJUNGAN WISATA", 14, 20);
-            doc.setFontSize(14);
-            doc.text("Wilayah Cihaurbeuti", 14, 28);
-            doc.setFontSize(10);
-            doc.text(`Pokdarwis WAGS | ${new Date().toLocaleDateString('id-ID')}`, 14, 35);
-            
-            // KPI Section
-            doc.setFontSize(12);
-            doc.text("Ringkasan Statistik:", 14, 48);
-            doc.setFontSize(10);
-            doc.text(`Total Kunjungan: ${document.getElementById('totalVisit').innerText} wisatawan`, 20, 58);
-            doc.text(`Rata-rata Bulanan: ${document.getElementById('avgMonthly').innerText} wisatawan`, 20, 63);
-            doc.text(`Pertumbuhan Tahunan: ${document.getElementById('yoyGrowth').innerText}`, 20, 68);
-            doc.text(`Lokasi Terpopuler: ${document.getElementById('topLocation').innerText}`, 20, 73);
-            doc.text(`Bulan Puncak: ${document.getElementById('peakMonth').innerText}`, 20, 78);
-            
-            // Table
-            doc.autoTable({ 
-                html: '#reportTable', 
-                startY: 88,
-                theme: 'striped', 
-                headStyles: {fillColor: [16, 185, 129]},
-                styles: {fontSize: 8}
-            });
-            
-            doc.save(`Laporan_Wisata_Cihaurbeuti_${new Date().toISOString().split('T')[0]}.pdf`);
-        }
-
-        function toggleTheme() {
-            const currentBg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
-            if(currentBg === '#f0fdf4' || currentBg === 'rgb(240, 253, 244)') {
-                document.documentElement.style.setProperty('--bg', '#064e3b');
-                document.documentElement.style.setProperty('--glass', 'rgba(6, 78, 59, 0.95)');
-                document.documentElement.style.setProperty('--dark', '#f0fdf4');
-            } else {
-                document.documentElement.style.setProperty('--bg', '#f0fdf4');
-                document.documentElement.style.setProperty('--glass', 'rgba(255, 255, 255, 0.95)');
-                document.documentElement.style.setProperty('--dark', '#064e3b');
-            }
         }
 
         function updatePass() {
             const op = document.getElementById('oldP').value;
             const np = document.getElementById('newP').value;
             if(op === adminPass && np) {
-                adminPass = np; 
-                localStorage.setItem('sip_pass_v14_cihaurbeuti', np);
-                // Update admin user password
-                const adminUser = users.find(u => u.username === 'admin');
-                if(adminUser) adminUser.password = np;
+                adminPass = np; localStorage.setItem('sip_pass_v13', np);
                 alert("Sukses! Password telah diganti.");
                 location.reload();
-            } else { 
-                alert("Verifikasi Gagal!"); 
-            }
+            } else { alert("Verifikasi Gagal!"); }
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(18);
+            doc.text("LAPORAN KUNJUNGAN WISATA", 14, 20);
+            
+            const filterText = document.getElementById('filterTag').innerText;
+            doc.setFontSize(10);
+            doc.text(`Filter: ${filterText}`, 14, 30);
+            doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 14, 35);
+            
+            doc.autoTable({ 
+                html: '#reportTable', 
+                startY: 45,
+                theme: 'striped', 
+                headStyles: {fillColor: [99, 102, 241]},
+                styles: {fontSize: 8},
+                margin: { left: 14 }
+            });
+            
+            doc.save(`Laporan_Wisata_${new Date().toISOString().split('T')[0]}.pdf`);
         }
 
         async function delLog(id) { 
-            if(confirm('Hapus data ini?')) { 
-                const { error } = await sb.from('visitor_logs').delete().eq('id', id);
-                if(error) {
-                    console.error('Error deleting log:', error);
-                    alert('Gagal menghapus data!');
-                } else {
-                    fetchData(); 
-                }
+            if(confirm('Apakah Anda yakin ingin menghapus data ini?')) { 
+                await sb.from('visitor_logs').delete().eq('id', id); 
+                fetchData(); 
             } 
         }
         
         async function delDest(id) { 
-            if(confirm('Hapus lokasi wisata ini?')) { 
-                const { error } = await sb.from('destinations').delete().eq('id', id);
-                if(error) {
-                    console.error('Error deleting destination:', error);
-                    alert('Gagal menghapus lokasi!');
-                } else {
-                    fetchData(); 
-                }
+            if(confirm('Hapus Lokasi? Data kunjungan di lokasi ini juga akan dihapus.')) { 
+                await sb.from('visitor_logs').delete().eq('destination_id', id);
+                await sb.from('destinations').delete().eq('id', id); 
+                fetchData(); 
             } 
         }
         
         async function addDest() { 
-            const n = document.getElementById('newD').value; 
+            const n = document.getElementById('newD').value.trim(); 
             if(n) { 
-                const { error } = await sb.from('destinations').insert({name: n});
-                if(error) {
-                    console.error('Error adding destination:', error);
-                    alert('Gagal menambah lokasi!');
-                } else {
-                    document.getElementById('newD').value=''; 
-                    fetchData(); 
-                }
-            } 
+                await sb.from('destinations').insert({name: n}); 
+                document.getElementById('newD').value=''; 
+                fetchData(); 
+            } else {
+                alert('Masukkan nama lokasi terlebih dahulu.');
+            }
         }
         
         function showLoad(s) { 
             document.getElementById('loader').style.display = s ? 'block' : 'none'; 
         }
+
+        // Auto-load input table when tab is opened
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputMonth = document.getElementById('inputMonth');
+            const inputYear = document.getElementById('inputYear');
+            const now = new Date();
+            
+            // Set default to current month and year
+            inputMonth.value = (now.getMonth() + 1).toString();
+            inputYear.value = now.getFullYear().toString();
+        });
     </script>
 </body>
 </html>
